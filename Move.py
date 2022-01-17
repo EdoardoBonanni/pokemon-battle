@@ -1,4 +1,4 @@
-class Move(object):
+class Move:
     def __init__(self, id, name, description, type, kind, power, accuracy, pp):
         self.id = id  # Move's number id
         self.name = name  # Move's name
@@ -19,43 +19,3 @@ class Move(object):
         msg = self.name + " " + str(self.power)
         return msg
 
-    # GET Methods
-    def getID(self):
-        return self.id
-
-    def getName(self):
-        return self.name
-
-    def getDescription(self):
-        return self.description
-
-    def getType(self):
-        return self.type
-
-    def getKind(self):
-        return self.kind
-
-    def getPower(self):
-        return self.power
-
-    def getAccuracy(self):
-        return self.accuracy
-
-    def getPP(self):
-        return self.pp
-
-    # SET Methods
-    def setName(self, name):
-        self.name = name
-
-    def setType(self, type):
-        self.type = type
-
-    def setPower(self, power):
-        self.power = power
-
-    def setAccuracy(self, accuracy):
-        self.accuracy = accuracy
-
-    def setPP(self, pp):
-        self.pp = pp

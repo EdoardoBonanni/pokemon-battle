@@ -1,7 +1,7 @@
 from Pokemon import Pokemon
 from Move import Move
 
-class Pokedex(object):
+class Pokedex:
     def __init__(self):
         self.listPokemon = {}
         self.listMoves = {}

@@ -1,4 +1,6 @@
-class Pokemon(object):
+import uuid
+
+class Pokemon:
     # Values used to calculate Pokemon base stats
     IV = 30
     EV = 85
@@ -11,6 +13,7 @@ class Pokemon(object):
         # ATTRIBUTES
         # Referring to the pokemonInfo list to fill in the rest of the attributes
         # ID Info
+        self.uid = uuid.uuid4().fields[-1] # id univoco Pokemon
         self.id = id
         self.name = name
         self.level = Pokemon.LEVEL
@@ -76,89 +79,6 @@ class Pokemon(object):
               "\nType2: " + str(self.type2) + "\nBase HP: " + str(self.hp) + "\nBase ATK: " + str(self.atk) + "\nBase DEF: " + \
               str(self.defense) + "\nBase Sp. ATK: " + str(self.spAtk) + "\nBase Sp. DEF: " + str(self.spDef) + "\nBase Speed: " + str(self.speed)
         return msg
-
-    # Get Attribute METHODS
-    def getName(self):
-        return self.name
-
-    def getLevel(self):
-        return self.level
-
-    # Get BASE STAT METHODS
-    def getHP(self):
-        return self.hp
-
-    def getATK(self):
-        return self.atk
-
-    def getDEF(self):
-        return self.defense
-
-    def getSpATK(self):
-        return self.spAtk
-
-    def getSpDEF(self):
-        return self.spDef
-
-    def getSpeed(self):
-        return self.speed
-
-    # Get STAT STAGE Methods
-    def getAtkStage(self):
-        return self.atkStage
-
-    def getDefStage(self):
-        return self.defStage
-
-    def getSpAtkStage(self):
-        return self.spAtkStage
-
-    def getSpDefStage(self):
-        return self.spDefStage
-
-    def getSpeedStage(self):
-        return self.speed
-
-    # Set STAT STAGE Methods
-    def setAtkStage(self, atkStage):
-        self.atkStage = atkStage
-
-    def setDefStage(self, defStage):
-        self.defStage = defStage
-
-    def setSpAtkStage(self, spAtkStage):
-        self.spAtkStage = spAtkStage
-
-    def setSpDefStage(self, spDefStage):
-        self.spDefStage = spDefStage
-
-    def setSpeedStage(self, speedStage):
-        self.speedStage = speedStage
-
-    # MOVE Methods
-    def getMove1(self):
-        return self.move1
-
-    def getMove2(self):
-        return self.move2
-
-    def getMove3(self):
-        return self.move3
-
-    def getMove4(self):
-        return self.move4
-
-    def setMove1(self, move1):
-        self.move1 = move1
-
-    def setMove2(self, move2):
-        self.move2 = move2
-
-    def setMove3(self, move3):
-        self.move3 = move3
-
-    def setMove4(self, move4):
-        self.move4 = move4
 
     # Print Methods
     # These methods return strings containing information about HP and movesets
