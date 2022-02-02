@@ -56,13 +56,13 @@ class choose_pokemon(QMainWindow):
         self.ui.tableWidget.item(0, 1).setText(item.name)
         self.ui.tableWidget.item(1, 1).setText(str(item.type1) + " " + str(item.type2))
         self.ui.tableWidget.item(2, 1).setText(str(item.move1.name) + ", " + str(item.move2.name) + ", " + str(item.move3.name) + ", " + str(item.move4.name))
-        self.ui.tableWidget.item(3, 1).setText(str(item.hp))
-        self.ui.tableWidget.item(4, 1).setText(str(item.atk))
-        self.ui.tableWidget.item(5, 1).setText(str(item.defense))
-        self.ui.tableWidget.item(6, 1).setText(str(item.spAtk))
-        self.ui.tableWidget.item(7, 1).setText(str(item.spDef))
-        self.ui.tableWidget.item(8, 1).setText(str(item.speed))
-        self.ui.tableWidget.item(9, 1).setText(str(item.total))
+        self.ui.tableWidget.item(3, 1).setText(str(int(item.battleHP)))
+        self.ui.tableWidget.item(4, 1).setText(str(int(item.battleATK)))
+        self.ui.tableWidget.item(5, 1).setText(str(int(item.battleDEF)))
+        self.ui.tableWidget.item(6, 1).setText(str(int(item.battleSpATK)))
+        self.ui.tableWidget.item(7, 1).setText(str(int(item.battleSpDEF)))
+        self.ui.tableWidget.item(8, 1).setText(str(int(item.battleSpeed)))
+        self.ui.tableWidget.item(9, 1).setText(str(int(item.battleTotal)))
 
         # Set pixmap
         self.ui.pokemon_img.setPixmap(QtGui.QPixmap('img_pokemon_png/' + item.name.lower() + '.png'))
@@ -171,6 +171,12 @@ class choose_pokemon(QMainWindow):
     def battle(self):
         #if len(self.model.me.team) == 6:
         self.close()
+        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Charizard'])
+        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Blastoise'])
+        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Venusaur'])
+        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Abra'])
+        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Metapod'])
+        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Mankey'])
         change_window = battle_window(self.model, self.width(), self.height())
         change_window.game()
 

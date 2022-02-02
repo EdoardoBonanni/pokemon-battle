@@ -41,11 +41,14 @@ class Pokemon:
         # The base stat is different from the in battle stat. The base stat is just used for calculating the in-battle stat
         # The in battle stats are calculated based on a formula from the games
         self.battleHP = int(self.hp + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 60)
+        self.battleHP_actual = int(self.hp + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 60)
+        self.battleHP_actual = 30
         self.battleATK = self.atk + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.battleDEF = self.defense + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.battleSpATK = self.spAtk + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.battleSpDEF = self.spDef + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.battleSpeed = self.speed + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
+        self.battleTotal = self.battleHP + self.battleATK + self.battleDEF + self.battleSpATK + self.battleSpDEF + self.battleSpeed
 
         # These variables are used to just hold the values of the original stat for stat modification purposes
         self.originalATK = self.atk + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
@@ -72,53 +75,24 @@ class Pokemon:
         self.spDefStage = 0
         self.speedStage = 0
 
-    # METHODS
-    # Printing all the Pokemon info with the str method
-    def __str__(self):
-        msg = "Name: " + str(self.name) + "\nID: " + str(self.id) + "\nType1: " + str(self.type1) + \
-              "\nType2: " + str(self.type2) + "\nBase HP: " + str(self.hp) + "\nBase ATK: " + str(self.atk) + "\nBase DEF: " + \
-              str(self.defense) + "\nBase Sp. ATK: " + str(self.spAtk) + "\nBase Sp. DEF: " + str(self.spDef) + "\nBase Speed: " + str(self.speed)
-        return msg
-
-    # Print Methods
-    # These methods return strings containing information about HP and movesets
-    def printHP(self):
-        msg = str(self.name) + ": HP " + str(self.battleHP)
-        return msg
-
-    def printMoves(self): # Take a list of move names as argument?
-        msg = "\nMove 1: " + self.move1.moveInfo[1] + "\nMove 2: " + self.move2.moveInfo[1] + "\nMove 3: " + self.move3.moveInfo[1] + "\nMove 4: " + self.move4.moveInfo[1]
-        return msg
-
-    # In Battle Methods
-
-    # Takes a move as input and returns a string with the pokemon using that move
-    def useMove(self, move):
-        msg = self.name + " used " + move.name + "!"
-        return msg
 
     # Takes an int as input and returns a string with the pokemon losing that much HP
     def loseHP(self, lostHP):
-        self.battleHP -= lostHP
+        self.battleHP_actual -= lostHP
         # Making sure battlHP doesn't fall below 0
-        if self.battleHP <= 0:
-            self.battleHP = 0
-        msg = self.name + " lost " + str(lostHP) + " HP!"
-        return msg
+        if self.battleHP_actual <= 0:
+            self.battleHP_actual = 0
 
     # Takes an int as input and returns a string with the pokemon gaining that much HP
     def gainHP(self, gainedHP):
-        self.hp += gainedHP
+        self.battleHP_actual += gainedHP
+        if self.battleHP_actual > self.battleHP:
+            self.battleHP_actual = self.battleHP
 
     # Determines if the Pokemon still has HP and returns a boolean
     def isAlive(self):
-        if self.battleHP > 0:
+        if self.battleHP_actual > 0:
             return True
         else:
             return False
 
-    # If battleHP is 0, returns a string showing that the Pokemon fainted
-    def faint(self):
-        if self.battleHP <= 0:
-            msg = self.name + " fainted "
-            return msg
