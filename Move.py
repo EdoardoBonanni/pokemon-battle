@@ -12,6 +12,7 @@ class Move:
         self.power = power  # Move's base damage
         self.accuracy = accuracy
         self.pp = pp
+        self.pp_remain = pp
 
     # METHODS
     # str method

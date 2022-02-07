@@ -9,4 +9,6 @@ class Model:
         self.pokedex = None
         # Moves.
         self.moves = None
+        #Type Advantages
+        self.type_advantages = {}
         # Connection.

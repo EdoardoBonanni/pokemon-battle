@@ -31,25 +31,16 @@ class Player:
                 return True
         return False
 
-    # def add_pokemon(self, pokemon):
-    #     if len(self.team) < 6:
-    #         self.team[pokemon.name.lower()] = pokemon
-    #         return True
-    #     elif len(self.team) == 6:
-    #         if not self.team.get(pokemon.name.lower()):
-    #             self.team.popitem()
-    #             self.team[pokemon.name.lower()] = pokemon
-    #             return True
-    #     return False
-    #
-    # def remove(self, pokemon):
-    #     if self.team.get(pokemon.name.lower()):
-    #         self.team.pop(pokemon.name.lower())
-    #         return True
-    #     return False
-    #
-    # def substitute_pokemon(self, pokemon_to_remove, pokemon_to_insert):
-    #     print()
+    def swap_position(self, index1, index2):
+        self.team[index1], self.team[index2] = self.team[index2], self.team[index1]
+
+    def search_pokemon_alive(self):
+        for i in range(len(self.team)):
+            if self.team[i].battleHP_actual > 0:
+                return i
+        return -1
+
+
 
 
 

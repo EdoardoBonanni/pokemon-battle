@@ -40,9 +40,8 @@ class Pokemon:
         # In Battle Stats
         # The base stat is different from the in battle stat. The base stat is just used for calculating the in-battle stat
         # The in battle stats are calculated based on a formula from the games
-        self.battleHP = int(self.hp + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 60)
-        self.battleHP_actual = int(self.hp + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 60)
-        self.battleHP_actual = 30
+        self.battleHP = int((self.hp + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 60) * 1.5)
+        self.battleHP_actual = int((self.hp + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 60) * 1.5)
         self.battleATK = self.atk + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.battleDEF = self.defense + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.battleSpATK = self.spAtk + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
@@ -57,16 +56,6 @@ class Pokemon:
         self.originalSpDEF = self.spDef + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
         self.originalSpeed = self.speed + (0.5*Pokemon.IV) + (0.125*Pokemon.EV) + 5
 
-        # # Moves
-        # # The Kanto Pokemon Spreadsheet has pre-determined movesets
-        # self.move1 = Move(pokemonInfo[10])
-        # self.move2 = Move(pokemonInfo[11])
-        # self.move3 = Move(pokemonInfo[12])
-        # self.move4 = Move(pokemonInfo[13])
-        #
-        # # A list containing all the moves; used for error-checking later
-        # self.moveList = [self.move1.name.lower(), self.move2.name.lower(), self.move3.name.lower(), self.move4.name.lower()]
-
         # In Battle Stats
         # Raised or lowered based on different moves used in battle. Affects the in battle stats (more info in the Overview of Battle Mechanics in readme.txt)
         self.atkStage = 0
@@ -78,16 +67,20 @@ class Pokemon:
 
     # Takes an int as input and returns a string with the pokemon losing that much HP
     def loseHP(self, lostHP):
+        hp_actual = self.battleHP_actual
         self.battleHP_actual -= lostHP
         # Making sure battlHP doesn't fall below 0
         if self.battleHP_actual <= 0:
             self.battleHP_actual = 0
+        return self.battleHP_actual - hp_actual
 
-    # Takes an int as input and returns a string with the pokemon gaining that much HP
+            # Takes an int as input and returns a string with the pokemon gaining that much HP
     def gainHP(self, gainedHP):
+        hp_actual = self.battleHP_actual
         self.battleHP_actual += gainedHP
         if self.battleHP_actual > self.battleHP:
             self.battleHP_actual = self.battleHP
+        return self.battleHP_actual - hp_actual
 
     # Determines if the Pokemon still has HP and returns a boolean
     def isAlive(self):

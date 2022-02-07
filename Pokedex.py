@@ -49,7 +49,7 @@ class Pokedex:
                 self.listPokemon[name] = pokemon  # Creating dicticionary with key = name and value is the pokemon object
         fin.close()
 
-    def getListaPokemon(self):
+    def getListPokemon(self):
         for pokemon in self.listPokemon.values():
             print(pokemon.id, pokemon.name, pokemon.type1, pokemon.type2, pokemon.hp, pokemon.atk, pokemon.defense, pokemon.spAtk, pokemon.spDef, pokemon.speed,
                   pokemon.move1.name, pokemon.move2.name, pokemon.move3.name, pokemon.move4.name)
@@ -60,4 +60,4 @@ if __name__ == "__main__":
     pokedex = Pokedex()
     pokedex.readCSVMoves("Pokemon Moves.csv")
     pokedex.readCSVPokemon("Kanto Pokemon Spreadsheet.csv")
-    pokedex.getListaPokemon()
+    pokedex.getListPokemon()

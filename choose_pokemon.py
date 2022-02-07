@@ -1,6 +1,8 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, QSize, QFileInfo
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox, QLabel
+
+import utils
 from choose_pokemon_view import Ui_MainWindow
 from Pokedex import Pokedex
 from Player import Player
@@ -10,6 +12,7 @@ from widget_item import Ui_widget_item
 from functools import partial
 from Model import Model
 from battle_window import battle_window
+from start_battle_window import start_battle_window
 
 
 class choose_pokemon(QMainWindow):
@@ -87,6 +90,7 @@ class choose_pokemon(QMainWindow):
         self.model.pokedex.readCSVMoves("Pokemon Moves.csv")
         self.model.pokedex.readCSVPokemon("Kanto Pokemon Spreadsheet.csv")
         self.names = list(self.model.pokedex.listPokemon.keys())
+        self.model.type_advantages = utils.read_type_advantages("Type Advantages.csv")
 
         for pokemon_name in self.names:
             item = QtWidgets.QListWidgetItem()
@@ -171,13 +175,21 @@ class choose_pokemon(QMainWindow):
     def battle(self):
         #if len(self.model.me.team) == 6:
         self.close()
+        # me
         self.model.me.add_pokemon(self.model.pokedex.listPokemon['Charizard'])
         self.model.me.add_pokemon(self.model.pokedex.listPokemon['Blastoise'])
         self.model.me.add_pokemon(self.model.pokedex.listPokemon['Venusaur'])
         self.model.me.add_pokemon(self.model.pokedex.listPokemon['Abra'])
         self.model.me.add_pokemon(self.model.pokedex.listPokemon['Metapod'])
         self.model.me.add_pokemon(self.model.pokedex.listPokemon['Mankey'])
-        change_window = battle_window(self.model, self.width(), self.height())
+        # enemy
+        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Fearow'])
+        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Poliwrath'])
+        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Alakazam'])
+        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Machamp'])
+        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Tentacruel'])
+        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Dodrio'])
+        change_window = start_battle_window(self.model, self.width(), self.height())
         change_window.game()
 
 
