@@ -30,6 +30,9 @@ class battle_window:
     def init(self):
         pygame.init()
 
+        # icon = pygame.image.load('img/pokemon.png').convert_alpha()
+        # pygame.display.set_icon(icon)
+
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption('Pokemon Battle')
         self.manager = pygame_gui.UIManager((self.screen_width, self.screen_height), 'themes/button_theming_test_theme.json')
@@ -327,114 +330,68 @@ class battle_window:
             pygame.display.update()
             k += 1
 
-    def determine_first_attack(self, move):
-        if self.model.me.team[0].battleSpeed >= self.model.enemy.team[0].battleSpeed:
-            defender_fainted = self.attack(self.model.me, self.model.enemy, move, True)
-            if not defender_fainted:
-                _ = self.attack(self.model.enemy, self.model.me, self.model.enemy.team[0].move1, False)
-        else:
-            defender_fainted = self.attack(self.model.enemy, self.model.me, self.model.enemy.team[0].move1, False)
-            if not defender_fainted:
-                _ = self.attack(self.model.me, self.model.enemy, move, True)
+    def change_pokemon(self):
+        self.screen.fill(BG)
+        self.btn_change_pokemon.hide()
+        self.btn_quit.hide()
+        self.btn_move1.hide()
+        self.btn_move2.hide()
+        self.btn_move3.hide()
+        self.btn_move4.hide()
+        self.draw_pokemon_choose_menu()
+        self.draw_HP_pokemon_choose_menu()
 
-    def attack(self, attacker, defender, move, player_attacker):
-        # attacker and defender can be self.me or self.enemy
-
-        # This modifier is used in damage calculations; it takes into account type advantage and STAB bonus
-        modifier = 1
-        # Calculating Type advantages using "Type Advantages.csv" file
-        for key in self.model.type_advantages:
-            # If the attacking and defending types match up, multiply the modifier by the damage multiplier from the list
-            if self.model.type_advantages[key][0] == move.type and self.model.type_advantages[key][1] == defender.team[0].type1:
-                modifier *= float(self.model.type_advantages[key][2])
-
-            # Didn't use elif; Just in case you get a 4x or 0.25x modifier based on double type
-            if self.model.type_advantages[key][0] == move.type and self.model.type_advantages[key][1] == defender.team[0].type2:
-                modifier *= float(self.model.type_advantages[key][2])
-
-        if modifier >= 2:
-            effectiveness = 'super effective'
-        elif modifier == 1:
-            effectiveness = 'normal effective'
-        elif modifier == 0:
-            effectiveness = 'not effect'
-        else:
-            effectiveness = 'not very effective'
-
-        # Calculating STAB (Same-type Attack Bonus)
-        if move.type == attacker.team[0].type1:
-            modifier *= attacker.team[0].STAB
-
-        elif move.type == attacker.team[0].type2:
-            modifier *= attacker.team[0].STAB
-
-        # Damage formula also has a random element
-        critic_value = random.uniform(0.85, 1.0)
-        modifier *= critic_value
-
-        # Appending the useMove function to the output
-        if effectiveness == 'normal effective':
-            self.description_battle = attacker.team[0].name + ' used ' + move.name + '.'
-        elif effectiveness == 'not effect':
-            self.description_battle = move.name + ' has no effect on ' + defender.team[0].name + '.'
-        else:
-            self.description_battle = attacker.team[0].name + ' used ' + move.name + '. It\'s ' + effectiveness + '.'
-        self.wait(30, False, False)
-
-        if critic_value > 0.98:
-            self.description_battle = 'A critical hit!'
-            self.wait(30, False, False)
-
-        # ATK/DEF or SpATK/SpDEF or Status? Using the Pokemon damage formula
-        # If the move is "Physical", the damage formula will take into account attack and defense
-        level = 100
-        if move.kind == "Physical":
-            damage = int((((2*level) + 10)/250 * (attacker.team[0].battleATK/defender.team[0].battleDEF) * move.power + 2) * modifier)
-            hp_lost = defender.team[0].loseHP(damage)
-            self.description_battle = defender.team[0].name + ' lost ' + str(hp_lost) + ' HP.'
-        # If the move is "Special", the damage formula will take into account special attack and special defense
-        elif move.kind == "Special":
-            damage = int((((2*level) + 10)/250 * (attacker.team[0].battleSpATK/defender.team[0].battleSpDEF) * move.power + 2) * modifier)
-            hp_lost = defender.team[0].loseHP(damage)
-            self.description_battle = defender.team[0].name + ' lost ' + str(hp_lost) + ' HP.'
-        # Stat Changing moves
-        else:
-            # If the move is stat-changing, it does 0 damage and the modifier is set to 1 (so it doesn't return super effective or not very effective)
-            damage = 0
-            hp_lost = defender.team[0].loseHP(damage)
-            print(defender.team[0].name + ' lost ' + str(hp_lost) + ' HP.')
-        self.wait(30, False, False)
-        move.pp_remain -= 1
-        defender_fainted = False
-        if defender.team[0].battleHP_actual == 0:
-            self.pokemon_fainted(player_attacker, defender.team[0])
-            defender_fainted = True
-        return defender_fainted
-
-    def pokemon_fainted(self, player_attacker, pokemon):
-        if player_attacker:
-            self.description_battle = 'The foe\'s ' + pokemon.name + ' fainted!'
-            self.wait(30, False, False)
-            index = self.model.enemy.search_pokemon_alive()
-            if index != -1:
-                self.model.enemy.swap_position(0, index)
-                self.description_battle = 'The foe chooses ' + self.model.enemy.team[0].name + '.'
-                self.wait(30, False, False)
-            else:
-                self.description_battle = 'YOU WIN.'
-                self.wait(30, False, False)
-                self.run = False
-        else:
-            self.description_battle = 'Your ' + pokemon.name + ' fainted!'
-            self.wait(30, False, False)
-            index = self.model.me.search_pokemon_alive()
-            if index != -1:
-                self.change_pokemon_menu = True
-            else:
-                self.description_battle = 'YOU LOSE.'
-                self.wait(30, False, False)
-                self.run = False
-
+        x, y = pygame.mouse.get_pos()
+        print(x, y)
+        for event in pygame.event.get():
+            if self.rect_pokemon_list_menu_active.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[0].battleHP_actual > 0:
+                        self.change_pokemon_menu = False
+            if self.rect_pokemon_list_menu_deactive1.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[1].battleHP_actual > 0:
+                        if self.model.me.team[0].battleHP_actual != 0:
+                            self.pokemon_changed_not_fainted = True
+                        utils.reset_stats(self.model.me.team[0])
+                        self.model.me.swap_position(0, 1)
+                        self.change_pokemon_menu = False
+            if self.rect_pokemon_list_menu_deactive2.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[2].battleHP_actual > 0:
+                        if self.model.me.team[0].battleHP_actual != 0:
+                            self.pokemon_changed_not_fainted = True
+                        utils.reset_stats(self.model.me.team[0])
+                        self.model.me.swap_position(0, 2)
+                        self.change_pokemon_menu = False
+            if self.rect_pokemon_list_menu_deactive3.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[3].battleHP_actual > 0:
+                        if self.model.me.team[0].battleHP_actual != 0:
+                            self.pokemon_changed_not_fainted = True
+                        utils.reset_stats(self.model.me.team[0])
+                        self.model.me.swap_position(0, 3)
+                        self.change_pokemon_menu = False
+            if self.rect_pokemon_list_menu_deactive4.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[4].battleHP_actual > 0:
+                        if self.model.me.team[0].battleHP_actual != 0:
+                            self.pokemon_changed_not_fainted = True
+                        utils.reset_stats(self.model.me.team[0])
+                        self.model.me.swap_position(0, 4)
+                        self.change_pokemon_menu = False
+            if self.rect_pokemon_list_menu_deactive5.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[5].battleHP_actual > 0:
+                        if self.model.me.team[0].battleHP_actual != 0:
+                            self.pokemon_changed_not_fainted = True
+                        utils.reset_stats(self.model.me.team[0])
+                        self.model.me.swap_position(0, 5)
+                        self.change_pokemon_menu = False
+            if self.rect_text_exit.collidepoint(pygame.mouse.get_pos()):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.model.me.team[0].battleHP_actual > 0:
+                        self.change_pokemon_menu = False
 
     def game(self):
         self.FPS = 60
@@ -444,6 +401,11 @@ class battle_window:
         self.draw_bg_img = False
         self.draw_button_battle = False
         self.change_pokemon_menu = False
+        self.pokemon_changed_not_fainted = False
+        self.count_move_me = 0
+        self.count_move_enemy = 0
+        self.special_moves_me = None
+        self.special_moves_enemy = None
 
         while self.run:
             self.clock.tick(self.FPS)
@@ -454,88 +416,54 @@ class battle_window:
                     if event.ui_element.most_specific_combined_id == self.btn_change_pokemon.most_specific_combined_id:
                         self.change_pokemon_menu = True
                     if event.ui_element.most_specific_combined_id == self.btn_quit.most_specific_combined_id:
-                        self.i -= 1
-                        self.draw_battle_description(self.names[self.i] + ' it\'s your turn')
+                        return None
                     if event.ui_element.most_specific_combined_id == self.btn_move1.most_specific_combined_id:
                         if self.model.me.team[0].move1.pp_remain > 0:
-                            self.determine_first_attack(self.model.me.team[0].move1)
+                            move_enemy = utils.choose_enemy_move(self)
+                            utils.checks_2_turns_attack(self, self.model.me.team[0].move1, move_enemy)
                         else:
                             self.description_battle = self.model.me.team[0].move1.name +' has 0 pp left.'
                             self.wait(30, False, False)
                     if event.ui_element.most_specific_combined_id == self.btn_move2.most_specific_combined_id:
                         if self.model.me.team[0].move2.pp_remain > 0:
-                            self.determine_first_attack(self.model.me.team[0].move2)
+                            move_enemy = utils.choose_enemy_move(self)
+                            utils.checks_2_turns_attack(self, self.model.me.team[0].move2, move_enemy)
                         else:
                             self.description_battle = self.model.me.team[0].move2.name +' has 0 pp left.'
                             self.wait(30, False, False)
                     if event.ui_element.most_specific_combined_id == self.btn_move3.most_specific_combined_id:
                         if self.model.me.team[0].move3.pp_remain > 0:
-                            self.determine_first_attack(self.model.me.team[0].move3)
+                            move_enemy = utils.choose_enemy_move(self)
+                            utils.checks_2_turns_attack(self, self.model.me.team[0].move3, move_enemy)
                         else:
-                            self.description_battle = self.model.me.team[0].move3.name +' has 0 pp remain.'
+                            self.description_battle = self.model.me.team[0].move3.name +' has 0 pp left.'
                             self.wait(30, False, False)
                     if event.ui_element.most_specific_combined_id == self.btn_move4.most_specific_combined_id:
                         if self.model.me.team[0].move4.pp_remain > 0:
-                            self.determine_first_attack(self.model.me.team[0].move4)
+                            move_enemy = utils.choose_enemy_move(self)
+                            utils.checks_2_turns_attack(self, self.model.me.team[0].move4, move_enemy)
                         else:
-                            self.description_battle = self.model.me.team[0].move4.name +' has 0 pp remain.'
+                            self.description_battle = self.model.me.team[0].move4.name +' has 0 pp left.'
                             self.wait(30, False, False)
 
                 self.manager.process_events(event)
 
-            if not self.change_pokemon_menu:
-                self.update_battle_window(True, True)
-                if self.start_battle:
-                    self.wait(25, True, True)
-                self.start_battle = False
-                self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
-
+            if self.pokemon_changed_not_fainted:
+                move_enemy = utils.choose_enemy_move(self)
+                utils.check_attacks(self, None, move_enemy)
+            elif self.special_moves_me != None:
+                move_enemy = utils.choose_enemy_move(self)
+                utils.checks_2_turns_attack(self, self.special_moves_me, move_enemy)
             else:
-                self.screen.fill(BG)
-                self.btn_change_pokemon.hide()
-                self.btn_quit.hide()
-                self.btn_move1.hide()
-                self.btn_move2.hide()
-                self.btn_move3.hide()
-                self.btn_move4.hide()
-                self.draw_pokemon_choose_menu()
-                self.draw_HP_pokemon_choose_menu()
+                if not self.change_pokemon_menu:
+                    self.update_battle_window(True, True)
+                    if self.start_battle:
+                        self.wait(30, False, False)
+                    self.start_battle = False
+                    self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
 
-                x, y = pygame.mouse.get_pos()
-                print(x, y)
-                for event in pygame.event.get():
-                    if self.rect_pokemon_list_menu_active.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            self.change_pokemon_menu = False
-                    if self.rect_pokemon_list_menu_deactive1.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if self.model.me.team[1].battleHP_actual > 0:
-                                self.model.me.swap_position(0, 1)
-                                self.change_pokemon_menu = False
-                    if self.rect_pokemon_list_menu_deactive2.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if self.model.me.team[2].battleHP_actual > 0:
-                                self.model.me.swap_position(0, 2)
-                                self.change_pokemon_menu = False
-                    if self.rect_pokemon_list_menu_deactive3.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if self.model.me.team[3].battleHP_actual > 0:
-                                self.model.me.swap_position(0, 3)
-                                self.change_pokemon_menu = False
-                    if self.rect_pokemon_list_menu_deactive4.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if self.model.me.team[4].battleHP_actual > 0:
-                                self.model.me.swap_position(0, 4)
-                                self.change_pokemon_menu = False
-                    if self.rect_pokemon_list_menu_deactive5.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if self.model.me.team[5].battleHP_actual > 0:
-                                self.model.me.swap_position(0, 5)
-                                self.change_pokemon_menu = False
-                    if self.rect_text_exit.collidepoint(pygame.mouse.get_pos()):
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            self.change_pokemon_menu = False
-
+                else:
+                    self.change_pokemon()
 
             time_delta = self.clock.tick(self.FPS)/1000.0
             self.manager.update(time_delta)

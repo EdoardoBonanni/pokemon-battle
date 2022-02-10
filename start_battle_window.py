@@ -25,6 +25,9 @@ class start_battle_window:
     def init(self):
         pygame.init()
 
+        # icon = pygame.image.load('img/pokemon.png').convert_alpha()
+        # pygame.display.set_icon(icon)
+
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption('Pokemon Battle')
 
@@ -34,7 +37,7 @@ class start_battle_window:
     def game(self):
         FPS = 60
         run = True
-        start_battle = False
+        self.start_battle = False
         start_img = pygame.image.load('img/start_btn.png').convert_alpha()
         exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 
@@ -51,19 +54,25 @@ class start_battle_window:
             self.screen.fill(BG)
             #add buttons
             if start_button.draw(self.screen):
-                start_battle = True
-                run = False
+                self.start_battle = True
+                #run = False
 
             if exit_button.draw(self.screen):
-                run = False
+                pygame.quit()
+                return None
+
+            if self.start_battle:
+                self.start_game()
 
             pygame.display.update()
 
-        if start_battle:
-            self.start_game()
-        else:
-            pygame.quit()
+        # if start_battle:
+        #     self.start_game()
+        # else:
+        #     pygame.quit()
 
     def start_game(self):
-        change_window = battle_window(self.model, self.screen_width, self.screen_height)
-        change_window.game()
+        battle_window_obj = battle_window(self.model, self.screen_width, self.screen_height)
+        battle_window_obj.game()
+        self.start_battle = False
+        del battle_window_obj

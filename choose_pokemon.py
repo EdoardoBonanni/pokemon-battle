@@ -13,6 +13,7 @@ from functools import partial
 from Model import Model
 from battle_window import battle_window
 from start_battle_window import start_battle_window
+from copy import deepcopy
 
 
 class choose_pokemon(QMainWindow):
@@ -174,24 +175,28 @@ class choose_pokemon(QMainWindow):
 
     def battle(self):
         #if len(self.model.me.team) == 6:
-        self.close()
+        self.hide()
         # me
-        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Charizard'])
-        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Blastoise'])
-        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Venusaur'])
-        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Abra'])
-        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Metapod'])
-        self.model.me.add_pokemon(self.model.pokedex.listPokemon['Mankey'])
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Jolteon']))
         # enemy
-        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Fearow'])
-        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Poliwrath'])
-        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Alakazam'])
-        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Machamp'])
-        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Tentacruel'])
-        self.model.enemy.add_pokemon(self.model.pokedex.listPokemon['Dodrio'])
+        self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
+        self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Metapod']))
+        self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
+        self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
+        self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+        self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
+
         change_window = start_battle_window(self.model, self.width(), self.height())
         change_window.game()
-
+        self.model.me.team = []
+        self.model.enemy.team = []
+        del change_window
+        self.show()
 
 
 if __name__ == "__main__":
