@@ -1,0 +1,133 @@
+{
+    "#btn_change_pokemon":
+    {
+        "font":
+        {
+            "name": "VT323",
+            "size": "35",
+            "regular_resource": { "package": "fonts", "resource": "VT323-Regular.ttf"}
+        },
+        "colours":
+        {
+            "normal_bg": "#cc0000",
+            "normal_text": "#ffffff",
+            "hovered_bg": "#ff0000"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "font-weight": "900"
+        }
+    },
+    "#btn_quit":
+    {
+        "font":
+        {
+            "name": "VT323",
+            "size": "35",
+            "regular_resource": { "package": "fonts", "resource": "VT323-Regular.ttf"}
+        },
+        "colours":
+        {
+            "normal_bg": "#000099",
+            "normal_text": "#ffffff",
+            "hovered_bg": "#0000cc"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "font-weight": "900"
+        }
+    },
+    "#btn_move1":
+    {
+        "font":
+        {
+            "name": "VT323",
+            "size": "25",
+            "regular_resource": { "package": "fonts", "resource": "VT323-Regular.ttf"}
+        },
+        "colours":
+        {
+            "normal_bg": "#ffffb3",
+            "normal_text": "#000000",
+            "hovered_bg": "#ffffb3"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "border_width": "10",
+            "shadow_width": "2",
+            "font-weight": "900"
+        }
+    },
+    "#btn_move2":
+    {
+        "font":
+        {
+            "name": "VT323",
+            "size": "25",
+            "regular_resource": { "package": "fonts", "resource": "VT323-Regular.ttf"}
+        },
+        "colours":
+        {
+            "normal_bg": "#ffffb3",
+            "normal_text": "#000000",
+            "hovered_bg": "#ffffb3"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "border_width": "10",
+            "shadow_width": "2",
+            "font-weight": "900"
+        }
+    },
+    "#btn_move3":
+    {
+        "font":
+        {
+            "name": "VT323",
+            "size": "25",
+            "regular_resource": { "package": "fonts", "resource": "VT323-Regular.ttf"}
+        },
+        "colours":
+        {
+            "normal_bg": "#ffffb3",
+            "normal_text": "#000000",
+            "hovered_bg": "#ffffb3"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "border_width": "10",
+            "shadow_width": "2",
+            "font-weight": "900"
+        }
+    },
+    "#btn_move4":
+    {
+        "font":
+        {
+            "name": "VT323",
+            "size": "25",
+            "regular_resource": { "package": "fonts", "resource": "VT323-Regular.ttf"}
+        },
+        "colours":
+        {
+            "normal_bg": "#ffffb3",
+            "normal_text": "#000000",
+            "hovered_bg": "#ffffb3"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4",
+            "border_width": "10",
+            "font-weight": "900"
+        }
+    }
+}
