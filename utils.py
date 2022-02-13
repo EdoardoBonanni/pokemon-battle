@@ -1,5 +1,6 @@
 import pygame
 import random
+from Spritesheet.spritesheet import Spritesheet
 
 def create_color_mapping():
     color_mapping = {'water': pygame.Color(104, 144, 240), 'steel': pygame.Color(184, 184, 208),
@@ -54,6 +55,32 @@ def statMod(statStage):
         multiplier = 1/4
     return multiplier  # This multiplier affects the value of the in-battle stat
 
+def read_spritesheet_trainer_me(filename):
+    my_spritesheet = Spritesheet(filename)
+    rand = random.randint(0, 1)
+    if rand == 0:
+        trainer = [my_spritesheet.parse_sprite('trainer1.png'), my_spritesheet.parse_sprite('trainer2.png'),my_spritesheet.parse_sprite('trainer3.png'),
+                   my_spritesheet.parse_sprite('trainer4.png'),my_spritesheet.parse_sprite('trainer5.png')]
+    else:
+        trainer = [my_spritesheet.parse_sprite('f_trainer1.png'), my_spritesheet.parse_sprite('f_trainer2.png'),my_spritesheet.parse_sprite('f_trainer3.png'),
+                     my_spritesheet.parse_sprite('f_trainer4.png'),my_spritesheet.parse_sprite('f_trainer5.png')]
+    return trainer
+
+def read_pokeball(pokeball_open, rand):
+    if pokeball_open:
+        open = '_open'
+    else:
+        open = ''
+    if rand == 0:
+        filename = 'pk' + open
+    elif rand == 1:
+        filename = 'pk_mega' + open
+    elif rand == 2:
+        filename = 'pk_ultra' + open
+    else:
+        filename = 'pk_master' + open
+    return filename
+
 def choose_enemy_move(battle_window):
     if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[0].move2.pp_remain <= 0 and \
         battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[0].move4.pp_remain <= 0:
@@ -91,14 +118,14 @@ def turn(battle_window, move_me, move_enemy):
     first_pokemon_fainted = False
     second_pokemon_fainted = False
     if first_attack_me:
-        attack_move, count_move, special_attack = determine_special_attack(battle_window, move_me, battle_window.model.me.team[0], battle_window.count_move_me)
+        attack_move, count_move, special_attack = determine_special_attack(battle_window, move_me, battle_window.model.me.team[0], battle_window.count_move_me, True)
         battle_window.count_move_me = count_move
         update_special_attack(battle_window, special_attack, move_me, True)
         if attack_move:
             first_pokemon_fainted, second_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy)
             reset_special_attack(battle_window, count_move, True)
         if not first_pokemon_fainted and not second_pokemon_fainted:
-            attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_enemy)
+            attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_enemy, False)
             battle_window.count_move_enemy = count_move
             update_special_attack(battle_window, special_attack, move_enemy, False)
             if attack_move:
@@ -109,14 +136,14 @@ def turn(battle_window, move_me, move_enemy):
         if second_pokemon_fainted:
             battle_window.count_move_enemy = 0
     else:
-        attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_me)
+        attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_me, False)
         battle_window.count_move_enemy = count_move
         update_special_attack(battle_window, special_attack, move_enemy, False)
         if attack_move:
             first_pokemon_fainted, second_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me)
             reset_special_attack(battle_window, count_move, False)
         if not first_pokemon_fainted and not second_pokemon_fainted:
-            attack_move, count_move, special_attack = determine_special_attack(battle_window, move_me, battle_window.model.me.team[0], battle_window.count_move_me)
+            attack_move, count_move, special_attack = determine_special_attack(battle_window, move_me, battle_window.model.me.team[0], battle_window.count_move_me, True)
             battle_window.count_move_me = count_move
             update_special_attack(battle_window, special_attack, move_me, True)
             if attack_move:
@@ -149,9 +176,10 @@ def reset_special_attack(battle_window, count_move, player_me):
             battle_window.special_moves_enemy = None
             battle_window.count_move_enemy = 0
 
-def determine_special_attack(battle_window, move, pokemon, count_move):
+def determine_special_attack(battle_window, move, pokemon, count_move, player_me):
     attack_move = True
     special_attack = False
+    update_appearance_pokemon(battle_window, player_me, True)
     if move.name.lower() == 'solarbeam' and count_move == 0:
         battle_window.description_battle = pokemon.name + ' absorbed light!'
         attack_move = False
@@ -159,11 +187,13 @@ def determine_special_attack(battle_window, move, pokemon, count_move):
         count_move += 1
     elif move.name.lower() == 'fly' and count_move == 0:
         battle_window.description_battle = pokemon.name + ' flew up high!'
+        update_appearance_pokemon(battle_window, player_me, False)
         attack_move = False
         special_attack = True
         count_move += 1
     elif move.name.lower() == 'dig' and count_move == 0:
         battle_window.description_battle = pokemon.name + ' dug underground!'
+        update_appearance_pokemon(battle_window, player_me, False)
         attack_move = False
         special_attack = True
         count_move += 1
@@ -210,9 +240,14 @@ def reset_stats(pokemon):
     pokemon.spDefStage = 0
     pokemon.speedStage = 0
 
+def update_appearance_pokemon(battle_window, player_attacker, value):
+    if player_attacker:
+        battle_window.pokemon_me_visible = value
+    else:
+        battle_window.pokemon_enemy_visible = value
+
 def attack(battle_window, attacker, defender, move, player_attacker, count_move_attacker, special_moves_defender, count_move_defender):
     # attacker and defender can be self.me or self.enemy
-
     # This modifier is used in damage calculations; it takes into account type advantage and STAB bonus
     modifier = 1
     # Calculating Type advantages using "Type Advantages.csv" file
@@ -229,8 +264,11 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
     defender_fainted = False
     always_miss_attack = False
     if special_moves_defender:
-        if (special_moves_defender.name.lower() == 'fly' or special_moves_defender.name.lower() == 'dig') and count_move_defender == 1:
+        if special_moves_defender.name.lower() == 'fly' and count_move_defender == 1:
             always_miss_attack = True
+        elif special_moves_defender.name.lower() == 'dig' and count_move_defender == 1 and move.name.lower() != 'earthquake':
+            always_miss_attack = True
+        update_appearance_pokemon(battle_window, player_attacker, True)
 
     if move.kind != "Physical" and move.kind != 'Special':
         move_accuracy = 100

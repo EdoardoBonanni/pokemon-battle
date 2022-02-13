@@ -118,14 +118,15 @@ class battle_window:
                                  'seel', 'grimer', 'shellder', 'krabby', 'voltorb', 'exeggcute', 'cubone', 'marowak', 'chansey', 'tangela', 'horsea', 'seadra', 'goldeen', 'seaking',
                                  'staryu', 'ditto', 'jolteon', 'omanyte', 'porygon', 'kabuto']
 
-        pokemon_me_image = pygame.image.load('img_pokemon_battle_png/' + pokemon_me.name.lower() + '_back.png').convert_alpha()
-        pokemon_me_image = pygame.transform.scale(pokemon_me_image, (pokemon_me_image.get_width() * 5, pokemon_me_image.get_height() * 5))
-        if pokemon_me.name.lower() in self.move_up_back:
-            self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.28))
-        elif pokemon_me.name.lower() in self.move_down_back:
-            self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.39))
-        else:
-            self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.33))
+        if self.pokemon_me_visible:
+            pokemon_me_image = pygame.image.load('img_pokemon_battle_png/' + pokemon_me.name.lower() + '_back.png').convert_alpha()
+            pokemon_me_image = pygame.transform.scale(pokemon_me_image, (pokemon_me_image.get_width() * 5, pokemon_me_image.get_height() * 5))
+            if pokemon_me.name.lower() in self.move_up_back:
+                self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.28))
+            elif pokemon_me.name.lower() in self.move_down_back:
+                self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.39))
+            else:
+                self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.33))
         draw_name_me = self.font_name.render(pokemon_me.name, False, (0,0,0))
         self.screen.blit(draw_name_me, (self.screen_width * 0.67, self.screen_height * 0.475))
         self.btn_move1.set_text(str(pokemon_me.move1.name) + ' ' + str(pokemon_me.move1.pp_remain) + '/' + str(pokemon_me.move1.pp))
@@ -163,14 +164,15 @@ class battle_window:
         if len(self.move_down) == 0:
             self.move_down = ['rattata', 'bulbasaur', 'sandshrew', 'paras', 'diglett', 'ditto', 'omanyte', 'porygon', 'nidoran', 'spearow', 'jigglypuff', 'paras', 'growlithe', 'abra', 'grimer',
                               'krabby', 'exeggcute', 'cubone', 'kabuto']
-        pokemon_enemy_image = pygame.image.load('img_pokemon_battle_png/' + pokemon_enemy.name.lower() + '.png').convert_alpha()
-        pokemon_enemy_image = pygame.transform.scale(pokemon_enemy_image, (pokemon_enemy_image.get_width() * 3, pokemon_enemy_image.get_height() * 3))
-        if pokemon_enemy.name.lower() in self.move_up:
-            self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.015))
-        elif pokemon_enemy.name.lower() in self.move_down:
-            self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.065))
-        else:
-            self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.045))
+        if self.pokemon_enemy_visible:
+            pokemon_enemy_image = pygame.image.load('img_pokemon_battle_png/' + pokemon_enemy.name.lower() + '.png').convert_alpha()
+            pokemon_enemy_image = pygame.transform.scale(pokemon_enemy_image, (pokemon_enemy_image.get_width() * 3, pokemon_enemy_image.get_height() * 3))
+            if pokemon_enemy.name.lower() in self.move_up:
+                self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.015))
+            elif pokemon_enemy.name.lower() in self.move_down:
+                self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.065))
+            else:
+                self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.045))
         draw_name_enemy = self.font_name.render(pokemon_enemy.name, False, (0,0,0))
         self.screen.blit(draw_name_enemy, (self.screen_width * 0.11, self.screen_height * 0.08))
 
@@ -330,6 +332,57 @@ class battle_window:
             pygame.display.update()
             k += 1
 
+    def start_battle_animations(self, wait_frame, trainer, update_button, show_type_img):
+        for index in range(len(trainer)):
+            k = 0
+            while k < wait_frame:
+                self.clock.tick(self.FPS)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.run = False
+
+                    self.manager.process_events(event)
+
+                self.update_battle_window(update_button, show_type_img)
+                trainer_img = pygame.transform.scale(trainer[index], (trainer[index].get_width() * 4, trainer[index].get_height() * 4)).convert_alpha()
+                self.screen.blit(trainer_img, (-self.screen_width * 0.02, self.screen_height * 0.445))
+
+                time_delta = self.clock.tick(self.FPS)/1000.0
+                self.manager.update(time_delta)
+
+                self.manager.draw_ui(self.screen)
+                pygame.display.update()
+                k += 1
+
+    def pokeball_animations(self, wait_frame, update_button, show_type_img, open_pokeball, rand):
+        k = 0
+        while k < wait_frame:
+            self.clock.tick(self.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+
+                self.manager.process_events(event)
+
+            self.update_battle_window(update_button, show_type_img)
+            if not open_pokeball:
+                filename = utils.read_pokeball(open_pokeball, rand)
+                pokeball_image = pygame.image.load('img/pokeballs/' + filename + '.png').convert_alpha()
+                pokeball_image = pygame.transform.scale(pokeball_image, (pokeball_image.get_width() * 3, pokeball_image.get_height() * 3)).convert_alpha()
+            else:
+                filename = utils.read_pokeball(open_pokeball, rand)
+                pokeball_image = pygame.image.load('img/pokeballs/' + filename + '.png').convert_alpha()
+                pokeball_image = pygame.transform.scale(pokeball_image, (pokeball_image.get_width() * 3, pokeball_image.get_height() * 3)).convert_alpha()
+            self.screen.blit(pokeball_image, (self.screen_width * 0.22, self.screen_height * 0.68))
+
+            time_delta = self.clock.tick(self.FPS)/1000.0
+            self.manager.update(time_delta)
+
+            self.manager.draw_ui(self.screen)
+            pygame.display.update()
+            k += 1
+
+
     def change_pokemon(self):
         self.screen.fill(BG)
         self.btn_change_pokemon.hide()
@@ -406,6 +459,11 @@ class battle_window:
         self.count_move_enemy = 0
         self.special_moves_me = None
         self.special_moves_enemy = None
+        self.pokemon_me_visible = False
+        self.pokemon_enemy_visible = True
+
+        trainer = utils.read_spritesheet_trainer_me('img/trainer_sheet.png')
+        start_animations = True
 
         while self.run:
             self.clock.tick(self.FPS)
@@ -456,9 +514,15 @@ class battle_window:
                 utils.checks_2_turns_attack(self, self.special_moves_me, move_enemy)
             else:
                 if not self.change_pokemon_menu:
-                    self.update_battle_window(True, True)
-                    if self.start_battle:
-                        self.wait(30, False, False)
+                    if start_animations:
+                        self.start_battle_animations(5, trainer, False, False)
+                        rand = random.randint(0, 3)
+                        self.pokeball_animations(10, False, False, False, rand)
+                        self.pokeball_animations(10, False, False, True, rand)
+                        start_animations = False
+                        self.pokemon_me_visible = True
+                    else:
+                        self.update_battle_window(True, True)
                     self.start_battle = False
                     self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
 

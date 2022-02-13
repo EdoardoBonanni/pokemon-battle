@@ -177,7 +177,7 @@ class choose_pokemon(QMainWindow):
         #if len(self.model.me.team) == 6:
         self.hide()
         # me
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
         self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
         self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
         self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
