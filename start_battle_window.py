@@ -24,12 +24,10 @@ class start_battle_window:
 
     def init(self):
         pygame.init()
-
-        # icon = pygame.image.load('img/pokemon.png').convert_alpha()
-        # pygame.display.set_icon(icon)
-
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption('Pokemon Battle')
+        icon = pygame.image.load('img/logo.png')
+        pygame.display.set_icon(icon)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
         #set framerate
         self.clock = pygame.time.Clock()

@@ -1,4 +1,5 @@
 import uuid
+import random
 
 class Pokemon:
     # Values used to calculate Pokemon base stats
@@ -13,10 +14,11 @@ class Pokemon:
         # ATTRIBUTES
         # Referring to the pokemonInfo list to fill in the rest of the attributes
         # ID Info
-        self.uid = uuid.uuid4().fields[-1] # id univoco Pokemon
+        # self.uid = uuid.uuid4().fields[-1] # id univoco Pokemon
         self.id = id
         self.name = name
         self.level = Pokemon.LEVEL
+        self.pokeball = random.randint(0, 3)
 
         # Type
         self.type1 = type1
@@ -36,6 +38,7 @@ class Pokemon:
         self.move2 = move2
         self.move3 = move3
         self.move4 = move4
+
 
         # In Battle Stats
         # The base stat is different from the in battle stat. The base stat is just used for calculating the in-battle stat

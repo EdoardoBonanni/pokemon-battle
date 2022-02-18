@@ -30,11 +30,10 @@ class battle_window:
     def init(self):
         pygame.init()
 
-        # icon = pygame.image.load('img/pokemon.png').convert_alpha()
-        # pygame.display.set_icon(icon)
-
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption('Pokemon Battle')
+        icon = pygame.image.load('img/logo.png')
+        pygame.display.set_icon(icon)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         self.manager = pygame_gui.UIManager((self.screen_width, self.screen_height), 'themes/button_theming_test_theme.json')
         self.font_name = pygame.font.Font("fonts/VT323-Regular.ttf", 60)
         self.font_hp = pygame.font.Font("fonts/VT323-Regular.ttf", 40)
@@ -192,7 +191,6 @@ class battle_window:
         self.screen.blit(type_img, position)
 
     def draw_pokemon_choose_menu(self):
-        # self.i = randrange(len(self.names))
         font_name = pygame.font.Font("fonts/VT323-Regular.ttf", 50)
         bg_team = pygame.image.load('img/bg_team.png').convert_alpha()
         bg_team = pygame.transform.scale(bg_team, (self.screen_width, self.screen_height))
@@ -332,29 +330,31 @@ class battle_window:
             pygame.display.update()
             k += 1
 
-    def start_battle_animations(self, wait_frame, trainer, update_button, show_type_img):
-        for index in range(len(trainer)):
-            k = 0
-            while k < wait_frame:
-                self.clock.tick(self.FPS)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        self.run = False
+    def start_battle_animations(self, trainer_me, trainer_enemy, update_button, show_type_img):
+        k = 0
+        wait_frame = 30
+        while k < wait_frame:
+            self.clock.tick(self.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
 
-                    self.manager.process_events(event)
+                self.manager.process_events(event)
 
-                self.update_battle_window(update_button, show_type_img)
-                trainer_img = pygame.transform.scale(trainer[index], (trainer[index].get_width() * 4, trainer[index].get_height() * 4)).convert_alpha()
-                self.screen.blit(trainer_img, (-self.screen_width * 0.02, self.screen_height * 0.445))
+            self.update_battle_window(update_button, show_type_img)
+            trainer_img = pygame.transform.scale(trainer_me[k // 6], (trainer_me[k // 6].get_width() * 4, trainer_me[k // 6].get_height() * 4)).convert_alpha()
+            self.screen.blit(trainer_img, (-self.screen_width * 0.02, self.screen_height * 0.445))
+            trainer_img_enemy = pygame.transform.scale(trainer_enemy[k // 10], (trainer_enemy[k // 10].get_width() * 3, trainer_enemy[k // 10].get_height() * 3)).convert_alpha()
+            self.screen.blit(trainer_img_enemy, (self.screen_width * 0.85, self.screen_height * 0.04))
 
-                time_delta = self.clock.tick(self.FPS)/1000.0
-                self.manager.update(time_delta)
+            time_delta = self.clock.tick(self.FPS)/1000.0
+            self.manager.update(time_delta)
 
-                self.manager.draw_ui(self.screen)
-                pygame.display.update()
-                k += 1
+            self.manager.draw_ui(self.screen)
+            pygame.display.update()
+            k += 1
 
-    def pokeball_animations(self, wait_frame, update_button, show_type_img, open_pokeball, rand):
+    def pokeball_animations(self, wait_frame, update_button, show_type_img, open_pokeball, pokemon_me, pokemon_enemy, animation_me, animation_enemy):
         k = 0
         while k < wait_frame:
             self.clock.tick(self.FPS)
@@ -365,15 +365,23 @@ class battle_window:
                 self.manager.process_events(event)
 
             self.update_battle_window(update_button, show_type_img)
-            if not open_pokeball:
-                filename = utils.read_pokeball(open_pokeball, rand)
+            if animation_enemy:
+                pokeball_type = pokemon_enemy.pokeball
+                filename = utils.read_pokeball(open_pokeball, pokeball_type)
+                pokeball_image_enemy = pygame.image.load('img/pokeballs/' + filename + '.png').convert_alpha()
+                pokeball_image_enemy = pygame.transform.flip(pokeball_image_enemy, True, False)
+                pokeball_image_enemy = pygame.transform.scale(pokeball_image_enemy, (pokeball_image_enemy.get_width() * 2, pokeball_image_enemy.get_height() * 2)).convert_alpha()
+                if open_pokeball:
+                    self.screen.blit(pokeball_image_enemy, (self.screen_width * 0.82, self.screen_height * 0.22))
+                else:
+                    self.screen.blit(pokeball_image_enemy, (self.screen_width * 0.82, self.screen_height * 0.23))
+
+            if animation_me:
+                pokeball_type = pokemon_me.pokeball
+                filename = utils.read_pokeball(open_pokeball, pokeball_type)
                 pokeball_image = pygame.image.load('img/pokeballs/' + filename + '.png').convert_alpha()
                 pokeball_image = pygame.transform.scale(pokeball_image, (pokeball_image.get_width() * 3, pokeball_image.get_height() * 3)).convert_alpha()
-            else:
-                filename = utils.read_pokeball(open_pokeball, rand)
-                pokeball_image = pygame.image.load('img/pokeballs/' + filename + '.png').convert_alpha()
-                pokeball_image = pygame.transform.scale(pokeball_image, (pokeball_image.get_width() * 3, pokeball_image.get_height() * 3)).convert_alpha()
-            self.screen.blit(pokeball_image, (self.screen_width * 0.22, self.screen_height * 0.68))
+                self.screen.blit(pokeball_image, (self.screen_width * 0.22, self.screen_height * 0.68))
 
             time_delta = self.clock.tick(self.FPS)/1000.0
             self.manager.update(time_delta)
@@ -382,6 +390,30 @@ class battle_window:
             pygame.display.update()
             k += 1
 
+    def explosion_animations(self, update_button, show_type_img, animation_pokemon_me):
+        k = 0
+        wait_frame = 39
+        while k < wait_frame:
+            self.clock.tick(self.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+
+                self.manager.process_events(event)
+
+            self.update_battle_window(update_button, show_type_img)
+            if animation_pokemon_me:
+                explosion = pygame.transform.scale(self.explosion_sheet[k], (self.explosion_sheet[k].get_width() * 1.5, self.explosion_sheet[k].get_height() * 1.5)).convert_alpha()
+                self.screen.blit(explosion, (self.screen_width * 0.15, self.screen_height * 0.58))
+            else:
+                self.screen.blit(self.explosion_sheet[k], (self.screen_width * 0.79, self.screen_height * 0.15))
+
+            time_delta = self.clock.tick(self.FPS)/1000.0
+            self.manager.update(time_delta)
+
+            self.manager.draw_ui(self.screen)
+            pygame.display.update()
+            k += 1
 
     def change_pokemon(self):
         self.screen.fill(BG)
@@ -394,8 +426,10 @@ class battle_window:
         self.draw_pokemon_choose_menu()
         self.draw_HP_pokemon_choose_menu()
 
-        x, y = pygame.mouse.get_pos()
-        print(x, y)
+        pokemon_changed = False
+
+        # x, y = pygame.mouse.get_pos()
+        # print(x, y)
         for event in pygame.event.get():
             if self.rect_pokemon_list_menu_active.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -409,6 +443,7 @@ class battle_window:
                         utils.reset_stats(self.model.me.team[0])
                         self.model.me.swap_position(0, 1)
                         self.change_pokemon_menu = False
+                        pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive2.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.model.me.team[2].battleHP_actual > 0:
@@ -417,6 +452,7 @@ class battle_window:
                         utils.reset_stats(self.model.me.team[0])
                         self.model.me.swap_position(0, 2)
                         self.change_pokemon_menu = False
+                        pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive3.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.model.me.team[3].battleHP_actual > 0:
@@ -425,6 +461,7 @@ class battle_window:
                         utils.reset_stats(self.model.me.team[0])
                         self.model.me.swap_position(0, 3)
                         self.change_pokemon_menu = False
+                        pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive4.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.model.me.team[4].battleHP_actual > 0:
@@ -433,6 +470,7 @@ class battle_window:
                         utils.reset_stats(self.model.me.team[0])
                         self.model.me.swap_position(0, 4)
                         self.change_pokemon_menu = False
+                        pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive5.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.model.me.team[5].battleHP_actual > 0:
@@ -441,10 +479,12 @@ class battle_window:
                         utils.reset_stats(self.model.me.team[0])
                         self.model.me.swap_position(0, 5)
                         self.change_pokemon_menu = False
+                        pokemon_changed = True
             if self.rect_text_exit.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
+        return pokemon_changed
 
     def game(self):
         self.FPS = 60
@@ -460,9 +500,12 @@ class battle_window:
         self.special_moves_me = None
         self.special_moves_enemy = None
         self.pokemon_me_visible = False
-        self.pokemon_enemy_visible = True
+        self.pokemon_enemy_visible = False
+        self.exit_battle = False
 
-        trainer = utils.read_spritesheet_trainer_me('img/trainer_sheet.png')
+        self.explosion_sheet = utils.read_spritesheet_explosion('img/explosion_sheet.png')
+        trainer_me = utils.read_spritesheet_trainer_me('img/trainer_sheet.png')
+        trainer_enemy = utils.read_spritesheet_trainer_enemy('img/enemy_trainers_sheet.png')
         start_animations = True
 
         while self.run:
@@ -474,6 +517,8 @@ class battle_window:
                     if event.ui_element.most_specific_combined_id == self.btn_change_pokemon.most_specific_combined_id:
                         self.change_pokemon_menu = True
                     if event.ui_element.most_specific_combined_id == self.btn_quit.most_specific_combined_id:
+                        utils.reset_team_stats(self.model.me)
+                        utils.reset_team_stats(self.model.enemy)
                         return None
                     if event.ui_element.most_specific_combined_id == self.btn_move1.most_specific_combined_id:
                         if self.model.me.team[0].move1.pp_remain > 0:
@@ -506,6 +551,11 @@ class battle_window:
 
                 self.manager.process_events(event)
 
+            if self.exit_battle:
+                utils.reset_team_stats(self.model.me)
+                utils.reset_team_stats(self.model.enemy)
+                return None
+
             if self.pokemon_changed_not_fainted:
                 move_enemy = utils.choose_enemy_move(self)
                 utils.check_attacks(self, None, move_enemy)
@@ -515,19 +565,24 @@ class battle_window:
             else:
                 if not self.change_pokemon_menu:
                     if start_animations:
-                        self.start_battle_animations(5, trainer, False, False)
-                        rand = random.randint(0, 3)
-                        self.pokeball_animations(10, False, False, False, rand)
-                        self.pokeball_animations(10, False, False, True, rand)
+                        self.start_battle_animations(trainer_me, trainer_enemy, False, False)
+                        self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, True)
+                        self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, True)
                         start_animations = False
                         self.pokemon_me_visible = True
+                        self.pokemon_enemy_visible = True
                     else:
                         self.update_battle_window(True, True)
                     self.start_battle = False
                     self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
 
                 else:
-                    self.change_pokemon()
+                    change_pokemon = self.change_pokemon()
+                    if change_pokemon:
+                        self.pokemon_me_visible = False
+                        self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, False)
+                        self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, False)
+                        self.pokemon_me_visible = True
 
             time_delta = self.clock.tick(self.FPS)/1000.0
             self.manager.update(time_delta)

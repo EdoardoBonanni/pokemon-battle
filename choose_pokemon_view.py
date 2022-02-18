@@ -16,8 +16,12 @@ class Ui_MainWindow(object):
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         MainWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         MainWindow.setAnimated(True)
-        icon_mainwindow = QtGui.QIcon("img/pokemon.png")
+        icon_mainwindow = QtGui.QIcon("img/logo.png")
         MainWindow.setWindowIcon(icon_mainwindow)
+        font_db = QtGui.QFontDatabase()
+        id = font_db.addApplicationFont("fonts/VT323-Regular.ttf")
+        # f = QtGui.QFont("VT323")
+        # MainWindow.setFont(f)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)

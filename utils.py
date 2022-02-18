@@ -58,43 +58,70 @@ def statMod(statStage):
 def read_spritesheet_trainer_me(filename):
     my_spritesheet = Spritesheet(filename)
     rand = random.randint(0, 1)
+    trainer = []
     if rand == 0:
-        trainer = [my_spritesheet.parse_sprite('trainer1.png'), my_spritesheet.parse_sprite('trainer2.png'),my_spritesheet.parse_sprite('trainer3.png'),
-                   my_spritesheet.parse_sprite('trainer4.png'),my_spritesheet.parse_sprite('trainer5.png')]
+        for i in range(5):
+            trainer.append(my_spritesheet.parse_sprite('trainer' + str(i + 1) + '.png'))
     else:
-        trainer = [my_spritesheet.parse_sprite('f_trainer1.png'), my_spritesheet.parse_sprite('f_trainer2.png'),my_spritesheet.parse_sprite('f_trainer3.png'),
-                     my_spritesheet.parse_sprite('f_trainer4.png'),my_spritesheet.parse_sprite('f_trainer5.png')]
+        for i in range(5):
+            trainer.append(my_spritesheet.parse_sprite('f_trainer' + str(i + 1) + '.png'))
     return trainer
 
-def read_pokeball(pokeball_open, rand):
+def read_spritesheet_trainer_enemy(filename):
+    my_spritesheet = Spritesheet(filename)
+    rand = random.randint(0, 3)
+    trainer = []
+    if rand == 0:
+        for i in range(3):
+            trainer.append(my_spritesheet.parse_sprite('brook' + str(i + 1) + '.png'))
+    elif rand == 1:
+        for i in range(3):
+            trainer.append(my_spritesheet.parse_sprite('giovanni' + str(i + 1) + '.png'))
+    elif rand == 2:
+        for i in range(3):
+            trainer.append(my_spritesheet.parse_sprite('lance' + str(i + 1) + '.png'))
+    else:
+        for i in range(3):
+            trainer.append(my_spritesheet.parse_sprite('misty' + str(i + 1) + '.png'))
+    return trainer
+
+def read_spritesheet_explosion(filename):
+    my_spritesheet = Spritesheet(filename)
+    explosion = []
+    for i in range(39):
+        explosion.append(my_spritesheet.parse_sprite('explosion' + str(i + 1) + '.png'))
+    return explosion
+
+def read_pokeball(pokeball_open, pokeball_type):
     if pokeball_open:
         open = '_open'
     else:
         open = ''
-    if rand == 0:
+    if pokeball_type == 0:
         filename = 'pk' + open
-    elif rand == 1:
+    elif pokeball_type == 1:
         filename = 'pk_mega' + open
-    elif rand == 2:
+    elif pokeball_type == 2:
         filename = 'pk_ultra' + open
     else:
         filename = 'pk_master' + open
     return filename
 
 def choose_enemy_move(battle_window):
-    if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[0].move2.pp_remain <= 0 and \
-        battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[0].move4.pp_remain <= 0:
-        return battle_window.model.enemy.team[0].move1
-    while True:
-        random_number = random.randint(1, 4)
-        if random_number == 1 and battle_window.model.enemy.team[0].move1.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move1
-        elif random_number == 2 and battle_window.model.enemy.team[0].move2.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move2
-        elif random_number == 3 and battle_window.model.enemy.team[0].move3.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move3
-        elif random_number == 4 and battle_window.model.enemy.team[0].move4.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move4
+    # if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[0].move2.pp_remain <= 0 and \
+    #     battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[0].move4.pp_remain <= 0:
+    #     return battle_window.model.enemy.team[0].move1
+    # while True:
+    #     random_number = random.randint(1, 4)
+    #     if random_number == 1 and battle_window.model.enemy.team[0].move1.pp_remain > 0:
+    #         return battle_window.model.enemy.team[0].move1
+    #     elif random_number == 2 and battle_window.model.enemy.team[0].move2.pp_remain > 0:
+    #         return battle_window.model.enemy.team[0].move2
+    #     elif random_number == 3 and battle_window.model.enemy.team[0].move3.pp_remain > 0:
+    #         return battle_window.model.enemy.team[0].move3
+    #     elif random_number == 4 and battle_window.model.enemy.team[0].move4.pp_remain > 0:
+    #         return battle_window.model.enemy.team[0].move4
+    return battle_window.model.enemy.team[0].move4
 
 def checks_2_turns_attack(battle_window, move_me, move_enemy):
     if battle_window.special_moves_me and battle_window.special_moves_enemy:
@@ -136,7 +163,7 @@ def turn(battle_window, move_me, move_enemy):
         if second_pokemon_fainted:
             battle_window.count_move_enemy = 0
     else:
-        attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_me, False)
+        attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_enemy, False)
         battle_window.count_move_enemy = count_move
         update_special_attack(battle_window, special_attack, move_enemy, False)
         if attack_move:
@@ -240,6 +267,20 @@ def reset_stats(pokemon):
     pokemon.spDefStage = 0
     pokemon.speedStage = 0
 
+def reset_team_stats(player):
+    for pokemon in player.team:
+        pokemon.battleHP_actual = pokemon.battleHP
+        pokemon.battleATK = pokemon.originalATK
+        pokemon.battleDEF = pokemon.originalDEF
+        pokemon.battleSpATK = pokemon.originalSpATK
+        pokemon.battleSpDEF = pokemon.originalSpDEF
+        pokemon.battleSpeed = pokemon.originalSpeed
+        pokemon.atkStage = 0
+        pokemon.defStage = 0
+        pokemon.spAtkStage = 0
+        pokemon.spDefStage = 0
+        pokemon.speedStage = 0
+
 def update_appearance_pokemon(battle_window, player_attacker, value):
     if player_attacker:
         battle_window.pokemon_me_visible = value
@@ -307,13 +348,28 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
         if move.kind == "Physical" or move.kind == "Special":
             if effectiveness == 'normal effective':
                 battle_window.description_battle = attacker.team[0].name + ' used ' + move.name + '.'
+                if special_moves_defender:
+                    if special_moves_defender.name.lower() != 'dig' and count_move_defender != 1 and move.name.lower() != 'earthquake':
+                        battle_window.explosion_animations(False, False, not player_attacker)
+                    else:
+                        battle_window.wait(30, False, False)
+                else:
+                    battle_window.explosion_animations(False, False, not player_attacker)
             elif effectiveness == 'not effect':
                 battle_window.description_battle = move.name + ' has no effect on ' + defender.team[0].name + '.'
+                battle_window.wait(30, False, False)
             else:
                 battle_window.description_battle = attacker.team[0].name + ' used ' + move.name + '. It\'s ' + effectiveness + '.'
+                if special_moves_defender:
+                    if special_moves_defender.name.lower() != 'dig' and count_move_defender != 1 and move.name.lower() != 'earthquake':
+                        battle_window.explosion_animations(False, False, not player_attacker)
+                    else:
+                        battle_window.wait(30, False, False)
+                else:
+                    battle_window.explosion_animations(False, False, not player_attacker)
         else:
             battle_window.description_battle = attacker.team[0].name + ' used ' + move.name + '.'
-        battle_window.wait(30, False, False)
+            battle_window.wait(30, False, False)
 
         if critic_value > 0.98 and (move.kind == "Physical" or move.kind == "Special"):
             battle_window.description_battle = 'A critical hit!'
@@ -328,9 +384,10 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
             if move.name == 'Bonemerang' or move.name == 'Double Kick':
                 damage *= 2
                 battle_window.description_battle = move.name + ' hits 2 times.'
-                battle_window.wait(30, False, False)
+                battle_window.explosion_animations(False, False, not player_attacker)
             elif move.name == 'Selfdestruct':
                 attacker.team[0].battleHP_actual = 0
+                battle_window.explosion_animations(False, False, player_attacker)
             battle_window.description_battle = defender.team[0].name + ' lost ' + str(abs(hp_lost)) + ' HP.'
         # If the move is "Special", the damage formula will take into account special attack and special defense
         elif move.kind == "Special":
@@ -425,11 +482,15 @@ def pokemon_fainted(battle_window, player_attacker, pokemon):
         if index != -1:
             battle_window.model.enemy.swap_position(0, index)
             battle_window.description_battle = 'The foe chooses ' + battle_window.model.enemy.team[0].name + '.'
-            battle_window.wait(30, False, False)
+            battle_window.pokemon_enemy_visible = False
+            battle_window.pokeball_animations(10, False, False, False, battle_window.model.me.team[0], battle_window.model.enemy.team[0], False, True)
+            battle_window.pokeball_animations(10, False, False, True, battle_window.model.me.team[0], battle_window.model.enemy.team[0], False, True)
+            battle_window.pokemon_enemy_visible = True
+            #battle_window.wait(30, False, False)
         else:
             battle_window.description_battle = 'YOU WIN.'
             battle_window.wait(30, False, False)
-            battle_window.run = False
+            battle_window.exit_battle = True
     else:
         battle_window.description_battle = pokemon.name + ' fainted!'
         battle_window.wait(30, False, False)
@@ -440,7 +501,7 @@ def pokemon_fainted(battle_window, player_attacker, pokemon):
         else:
             battle_window.description_battle = 'YOU LOSE.'
             battle_window.wait(30, False, False)
-            battle_window.run = False
+            battle_window.exit_battle = True
 
 
 
