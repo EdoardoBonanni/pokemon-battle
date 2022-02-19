@@ -306,9 +306,10 @@ class battle_window:
             self.btn_move4.hide()
         self.draw_pokemon(self.model.me.team[0], self.model.enemy.team[0], show_type_img)
 
-        self.renderHPBar(self.hp_img_enemy.get_width() * 0.62, self.hp_img_enemy.get_height() * 0.275, (self.screen_width * 0.178, self.screen_height * 0.16), self.model.enemy.team[0].battleHP, self.model.enemy.team[0].battleHP_actual) # HP enemy
-        self.renderHPBar(self.hp_img_me.get_width() * 0.6, self.hp_img_me.get_height() * 0.18, (self.screen_width * 0.732, self.screen_height * 0.552), self.model.me.team[0].battleHP, self.model.me.team[0].battleHP_actual) # HP me
-        draw_hp_number = self.font_hp.render(str(self.model.me.team[0].battleHP_actual) + ' / ' + str(self.model.me.team[0].battleHP), False, (0,0,0))
+    def draw_hp(self, hp_me, hp_enemy):
+        self.renderHPBar(self.hp_img_enemy.get_width() * 0.62, self.hp_img_enemy.get_height() * 0.275, (self.screen_width * 0.178, self.screen_height * 0.16), self.model.enemy.team[0].battleHP, hp_enemy) # HP enemy
+        self.renderHPBar(self.hp_img_me.get_width() * 0.6, self.hp_img_me.get_height() * 0.18, (self.screen_width * 0.732, self.screen_height * 0.552), self.model.me.team[0].battleHP, hp_me) # HP me
+        draw_hp_number = self.font_hp.render(str(hp_me) + ' / ' + str(self.model.me.team[0].battleHP), False, (0,0,0))
         self.screen.blit(draw_hp_number, (self.screen_width * 0.75, self.screen_height * 0.62))
 
     def wait(self, wait, update_button, show_type_img):
@@ -322,6 +323,7 @@ class battle_window:
                 self.manager.process_events(event)
 
             self.update_battle_window(update_button, show_type_img)
+            self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
 
             time_delta = self.clock.tick(self.FPS)/1000.0
             self.manager.update(time_delta)
@@ -342,6 +344,7 @@ class battle_window:
                 self.manager.process_events(event)
 
             self.update_battle_window(update_button, show_type_img)
+            self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
             trainer_img = pygame.transform.scale(trainer_me[k // 6], (trainer_me[k // 6].get_width() * 4, trainer_me[k // 6].get_height() * 4)).convert_alpha()
             self.screen.blit(trainer_img, (-self.screen_width * 0.02, self.screen_height * 0.445))
             trainer_img_enemy = pygame.transform.scale(trainer_enemy[k // 10], (trainer_enemy[k // 10].get_width() * 3, trainer_enemy[k // 10].get_height() * 3)).convert_alpha()
@@ -365,6 +368,7 @@ class battle_window:
                 self.manager.process_events(event)
 
             self.update_battle_window(update_button, show_type_img)
+            self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
             if animation_enemy:
                 pokeball_type = pokemon_enemy.pokeball
                 filename = utils.read_pokeball(open_pokeball, pokeball_type)
@@ -402,12 +406,40 @@ class battle_window:
                 self.manager.process_events(event)
 
             self.update_battle_window(update_button, show_type_img)
+            self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
             if animation_pokemon_me:
                 explosion = pygame.transform.scale(self.explosion_sheet[k], (self.explosion_sheet[k].get_width() * 1.5, self.explosion_sheet[k].get_height() * 1.5)).convert_alpha()
                 self.screen.blit(explosion, (self.screen_width * 0.15, self.screen_height * 0.58))
             else:
                 self.screen.blit(self.explosion_sheet[k], (self.screen_width * 0.79, self.screen_height * 0.15))
 
+            time_delta = self.clock.tick(self.FPS)/1000.0
+            self.manager.update(time_delta)
+
+            self.manager.draw_ui(self.screen)
+            pygame.display.update()
+            k += 1
+
+    def reduce_hp_bar(self, update_button, show_type_img, player_attacker, reduced_hp):
+        if player_attacker:
+            actual_hp = self.model.enemy.team[0].battleHP_actual
+        else:
+            actual_hp = self.model.me.team[0].battleHP_actual
+        k = 0
+        reduced_hp = abs(reduced_hp)
+        while k < reduced_hp:
+            self.clock.tick(self.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+
+                self.manager.process_events(event)
+
+            self.update_battle_window(update_button, show_type_img)
+            if player_attacker:
+                self.draw_hp(self.model.me.team[0].battleHP_actual, actual_hp + reduced_hp - k)
+            else:
+                self.draw_hp(actual_hp + reduced_hp - k, self.model.enemy.team[0].battleHP_actual)
             time_delta = self.clock.tick(self.FPS)/1000.0
             self.manager.update(time_delta)
 
@@ -484,6 +516,7 @@ class battle_window:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
+        self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
         return pokemon_changed
 
     def game(self):
@@ -573,6 +606,7 @@ class battle_window:
                         self.pokemon_enemy_visible = True
                     else:
                         self.update_battle_window(True, True)
+                        self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
                     self.start_battle = False
                     self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
 

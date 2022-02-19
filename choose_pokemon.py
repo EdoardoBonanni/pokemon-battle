@@ -174,7 +174,7 @@ class choose_pokemon(QMainWindow):
 
     def battle(self):
         # me
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Blastoise']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
@@ -185,8 +185,8 @@ class choose_pokemon(QMainWindow):
             self.choose_enemy_pokemon()
 
             # enemy
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Metapod']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Rattata']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Moltres']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))

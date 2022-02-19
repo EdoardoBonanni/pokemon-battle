@@ -64,11 +64,6 @@ class start_battle_window:
 
             pygame.display.update()
 
-        # if start_battle:
-        #     self.start_game()
-        # else:
-        #     pygame.quit()
-
     def start_game(self):
         battle_window_obj = battle_window(self.model, self.screen_width, self.screen_height)
         battle_window_obj.game()
