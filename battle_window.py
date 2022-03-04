@@ -1,12 +1,9 @@
-from Model import Model
+from models.Model import Model
 import pygame
 from pygame.locals import *
 import pygame_gui
-import button
-from random import randrange
-import time
-import utils
-import random
+from utility import utils
+from utility import game_single_player
 
 #define colours
 BG_GREEN = (144, 201, 120)
@@ -50,17 +47,22 @@ class battle_window:
         self.move_up = []
         self.move_down = []
 
-    def draw_bg(self, draw_bg_img):
-        if not draw_bg_img:
+    def draw_bg(self):
+        if not self.draw_bg_img:
             self.battle_bg_img = pygame.image.load('img/battle_bg_1.png').convert_alpha()
             self.battle_bg_img = pygame.transform.scale(self.battle_bg_img, (self.screen_width, self.screen_height * 0.79))
             self.hp_img_me = pygame.image.load('img/life_bar_player.png').convert_alpha()
             self.hp_img_me = pygame.transform.scale(self.hp_img_me, (self.hp_img_me.get_width() / 1.25, self.hp_img_me.get_height() / 1.25))
             self.hp_img_enemy = pygame.image.load('img/life_bar_enemy.png').convert_alpha()
             self.hp_img_enemy = pygame.transform.scale(self.hp_img_enemy, (self.hp_img_enemy.get_width() / 1.25, self.hp_img_enemy.get_height() / 1.25))
+            self.name_player = pygame.font.Font("fonts/VT323-Regular.ttf", 30).render("You: " + str(self.model.me.name), False, (0,0,0))
+            self.name_enemy = pygame.font.Font("fonts/VT323-Regular.ttf", 30).render("Enemy: CPU", False, (0,0,0))
+            self.draw_bg_img = True
         self.screen.blit(self.battle_bg_img, (0, 0))
         self.screen.blit(self.hp_img_me, (self.screen_width * 0.63, self.screen_height * 0.55))
         self.screen.blit(self.hp_img_enemy, (self.screen_width * 0.08, self.screen_height * 0.15))
+        self.screen.blit(self.name_player, (self.screen_width * 0.64, self.screen_height * 0.72))
+        self.screen.blit(self.name_enemy, (self.screen_width * 0.112, self.screen_height * 0.03))
 
     def draw_button(self):
         button_width = self.screen_width * 0.18
@@ -282,7 +284,7 @@ class battle_window:
 
     def update_battle_window(self, show_button, show_type_img):
         self.screen.fill(BG)
-        self.draw_bg(self.draw_bg_img)
+        self.draw_bg()
         if self.start_battle:
             self.description_battle = str(self.model.me.team[0].name) + ' it\'s your turn.'
         self.draw_battle_description(self.description_battle)
@@ -550,34 +552,32 @@ class battle_window:
                     if event.ui_element.most_specific_combined_id == self.btn_change_pokemon.most_specific_combined_id:
                         self.change_pokemon_menu = True
                     if event.ui_element.most_specific_combined_id == self.btn_quit.most_specific_combined_id:
-                        utils.reset_team_stats(self.model.me)
-                        utils.reset_team_stats(self.model.enemy)
-                        return None
+                        self.exit_battle = True
                     if event.ui_element.most_specific_combined_id == self.btn_move1.most_specific_combined_id:
                         if self.model.me.team[0].move1.pp_remain > 0:
                             move_enemy = utils.choose_enemy_move(self)
-                            utils.checks_2_turns_attack(self, self.model.me.team[0].move1, move_enemy)
+                            game_single_player.checks_2_turns_attack(self, self.model.me.team[0].move1, move_enemy)
                         else:
                             self.description_battle = self.model.me.team[0].move1.name +' has 0 pp left.'
                             self.wait(30, False, False)
                     if event.ui_element.most_specific_combined_id == self.btn_move2.most_specific_combined_id:
                         if self.model.me.team[0].move2.pp_remain > 0:
                             move_enemy = utils.choose_enemy_move(self)
-                            utils.checks_2_turns_attack(self, self.model.me.team[0].move2, move_enemy)
+                            game_single_player.checks_2_turns_attack(self, self.model.me.team[0].move2, move_enemy)
                         else:
                             self.description_battle = self.model.me.team[0].move2.name +' has 0 pp left.'
                             self.wait(30, False, False)
                     if event.ui_element.most_specific_combined_id == self.btn_move3.most_specific_combined_id:
                         if self.model.me.team[0].move3.pp_remain > 0:
                             move_enemy = utils.choose_enemy_move(self)
-                            utils.checks_2_turns_attack(self, self.model.me.team[0].move3, move_enemy)
+                            game_single_player.checks_2_turns_attack(self, self.model.me.team[0].move3, move_enemy)
                         else:
                             self.description_battle = self.model.me.team[0].move3.name +' has 0 pp left.'
                             self.wait(30, False, False)
                     if event.ui_element.most_specific_combined_id == self.btn_move4.most_specific_combined_id:
                         if self.model.me.team[0].move4.pp_remain > 0:
                             move_enemy = utils.choose_enemy_move(self)
-                            utils.checks_2_turns_attack(self, self.model.me.team[0].move4, move_enemy)
+                            game_single_player.checks_2_turns_attack(self, self.model.me.team[0].move4, move_enemy)
                         else:
                             self.description_battle = self.model.me.team[0].move4.name +' has 0 pp left.'
                             self.wait(30, False, False)
@@ -587,14 +587,17 @@ class battle_window:
             if self.exit_battle:
                 utils.reset_team_stats(self.model.me)
                 utils.reset_team_stats(self.model.enemy)
+                self.model.enemy.team = []
+                self.run = False
+                pygame.quit()
                 return None
 
             if self.pokemon_changed_not_fainted:
                 move_enemy = utils.choose_enemy_move(self)
-                utils.check_attacks(self, None, move_enemy)
+                game_single_player.check_attacks(self, None, move_enemy)
             elif self.special_moves_me != None:
                 move_enemy = utils.choose_enemy_move(self)
-                utils.checks_2_turns_attack(self, self.special_moves_me, move_enemy)
+                game_single_player.checks_2_turns_attack(self, self.special_moves_me, move_enemy)
             else:
                 if not self.change_pokemon_menu:
                     if start_animations:

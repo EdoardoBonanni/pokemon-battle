@@ -1,71 +1,111 @@
-from Model import Model
-import pygame
-from pygame.locals import *
-import pygame_gui
-import button
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from models.Model import Model
+from UI.StartGameUI import Ui_MainWindow
 from battle_window import battle_window
+from battle_window_multiplayer import battle_window_multiplayer
+import random
+from configuration_dialog import configuration_dialog
+from copy import deepcopy
 
-#define colours
-BG_GREEN = (144, 201, 120)
-BG = (224, 235, 235)
-RED = (255, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-BLACK = (0, 0, 0)
-PINK = (235, 65, 54)
+class start_battle_window(QMainWindow):
+    def __init__(self, model: Model, choose_pokemon_view):
+        super(start_battle_window, self).__init__()
+        # get the Ui_MainWindow.
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-class start_battle_window:
-    def __init__(self, model: Model, width, height):
+        self.parent_view = choose_pokemon_view
         self.model = model
-        self.screen_width = 1300
-        self.screen_height = int(1300 * 0.7)
+        self.configuration_dialog = configuration_dialog()
 
-        self.init()
+        self.show()
+        self.interaction()
 
-    def init(self):
-        pygame.init()
-        pygame.display.set_caption('Pokemon Battle')
-        icon = pygame.image.load('img/logo.png')
-        pygame.display.set_icon(icon)
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+    def interaction(self):
+        self.ui.singleplayer.clicked.connect(self.start_singleplayer_battle)
+        self.ui.multiplayer.clicked.connect(self.start_multiplayer_battle)
+        self.ui.exit.clicked.connect(self.exit_action)
 
-        #set framerate
-        self.clock = pygame.time.Clock()
+    def start_singleplayer_battle(self):
+        if self.ui.insert_name.text() != '' and len(self.ui.insert_name.text()) < 25:
+            self.model.me.name = self.ui.insert_name.text()
+            self.choose_enemy_pokemon()
 
-    def game(self):
-        FPS = 60
-        run = True
-        self.start_battle = False
-        start_img = pygame.image.load('img/start_btn.png').convert_alpha()
-        exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
+            # enemy
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Rattata']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Moltres']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
 
-        start_button = button.Button(self.screen_width // 2 - 130, self.screen_height // 2 - 150, start_img, 1)
-        exit_button = button.Button(self.screen_width // 2 - 110, self.screen_height // 2 + 50, exit_img, 1)
+            battle_window_obj = battle_window(self.model, self.width(), self.height())
+            self.hide()
+            battle_window_obj.game()
+            self.show()
+            del battle_window_obj
+        elif len(self.ui.insert_name.text()) >= 25:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle('Warning')
+            msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
+            msg_box.setText("Nickname too long.")
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle('Warning')
+            msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
+            msg_box.setText("You have to choose a nickname.")
+            msg_box.exec_()
 
-        while run:
-            self.clock.tick(FPS)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
+    def start_multiplayer_battle(self):
+        if self.ui.insert_name.text() != '' and len(self.ui.insert_name.text()) < 25:
+            self.model.me.name = self.ui.insert_name.text()
 
-            #draw menu
-            self.screen.fill(BG)
-            #add buttons
-            if start_button.draw(self.screen):
-                self.start_battle = True
-                #run = False
+            battle_window_multiplayer_obj = battle_window_multiplayer(self.model, self.width(), self.height())
+            self.hide()
+            battle_window_multiplayer_obj.game()
+            self.show()
+            del battle_window_multiplayer_obj
 
-            if exit_button.draw(self.screen):
-                pygame.quit()
-                return None
+            # data = {
+            #     "type": "team",
+            #     "pokemon_0": str(self.model.me.team[0].name.lower()),
+            #     "pokemon_1": str(self.model.me.team[1].name.lower()),
+            #     "pokemon_2": str(self.model.me.team[2].name.lower()),
+            #     "pokemon_3": str(self.model.me.team[3].name.lower()),
+            #     "pokemon_4": str(self.model.me.team[4].name.lower()),
+            #     "pokemon_5": str(self.model.me.team[5].name.lower())
+            # }
 
-            if self.start_battle:
-                self.start_game()
+        elif len(self.ui.insert_name.text()) >= 25:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle('Warning')
+            msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
+            msg_box.setText("Nickname too long.")
+            msg_box.exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle('Warning')
+            msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
+            msg_box.setText("You have to choose a nickname.")
+            msg_box.exec_()
 
-            pygame.display.update()
+    def exit_action(self):
+        self.model.me.team = []
+        self.model.enemy.team = []
+        self.hide()
+        self.parent_view.update_team()
+        self.parent_view.show()
 
-    def start_game(self):
-        battle_window_obj = battle_window(self.model, self.screen_width, self.screen_height)
-        battle_window_obj.game()
-        self.start_battle = False
-        del battle_window_obj
+    def choose_enemy_pokemon(self):
+        while len(self.model.enemy.team) < 6:
+            index = random.randint(0, len(self.model.pokedex.listPokemon) - 1)
+            pokemon = deepcopy(list(self.model.pokedex.listPokemon.values())[index])
+            if pokemon.name not in self.model.enemy.pokemon_names():
+                self.model.enemy.add_pokemon(pokemon)
+

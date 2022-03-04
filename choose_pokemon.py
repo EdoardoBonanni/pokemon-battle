@@ -1,17 +1,14 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt, QSize, QFileInfo
-from PyQt5.QtWidgets import QFileDialog, QMainWindow, QTableWidgetItem, QDialog, QMessageBox, QLabel
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 import random
-import utils
-from choose_pokemon_view import Ui_MainWindow
-from Pokedex import Pokedex
-from Player import Player
+from utility import utils
+from UI.ChoosePokemonUI import Ui_MainWindow
+from models.Pokedex import Pokedex
+from models.Player import Player
 from PyQt5.QtGui import QMovie
-import time
-from widget_item import Ui_widget_item
+from UI.WidgetItemUI import Ui_widget_item
 from functools import partial
-from Model import Model
-from battle_window import battle_window
+from models.Model import Model
 from start_battle_window import start_battle_window
 from copy import deepcopy
 
@@ -30,6 +27,46 @@ class choose_pokemon(QMainWindow):
 
         self.show()
         self.interaction()
+
+    def interaction(self):
+        self.ui.add_pokemon.clicked.connect(self.add_pokemon_to_team)
+        self.ui.remove_pokemon.clicked.connect(self.remove_pokemon_from_team)
+        self.ui.list_item.itemClicked.connect(self.view_pokemon)
+        self.ui.button_battle.clicked.connect(self.battle)
+        self.ui.label_1.mouseDoubleClickEvent = partial(self.substitute_pokemon, 1)
+        self.ui.label_2.mouseDoubleClickEvent = partial(self.substitute_pokemon, 2)
+        self.ui.label_3.mouseDoubleClickEvent = partial(self.substitute_pokemon, 3)
+        self.ui.label_4.mouseDoubleClickEvent = partial(self.substitute_pokemon, 4)
+        self.ui.label_5.mouseDoubleClickEvent = partial(self.substitute_pokemon, 5)
+        self.ui.label_6.mouseDoubleClickEvent = partial(self.substitute_pokemon, 6)
+
+    def initUI(self):
+        self.model.me = Player()
+        self.model.enemy = Player()
+        self.model.pokedex = Pokedex()
+        self.model.pokedex.readCSVMoves("csv/Pokemon Moves.csv")
+        self.model.pokedex.readCSVPokemon("csv/Kanto Pokemon Spreadsheet.csv")
+        self.names = list(self.model.pokedex.listPokemon.keys())
+        self.model.type_advantages = utils.read_type_advantages("csv/Type Advantages.csv")
+
+        for pokemon_name in self.names:
+            item = QtWidgets.QListWidgetItem()
+            widget = QtWidgets.QWidget()
+
+            widget_item = Ui_widget_item()
+            widget_item.setupUi(widget)
+            movie = QMovie('Sprites/' + pokemon_name.lower() + '.gif')
+            widget_item.label_gif.setMovie(movie)
+            movie.start()
+            widget_item.label_name.setText(pokemon_name)
+            item.setSizeHint(widget.size())
+            self.ui.list_item.addItem(item)
+            self.ui.list_item.setItemWidget(item, widget)
+
+        self.ui.list_item.setCurrentRow(0)
+        item_name = self.names[self.ui.list_item.currentRow()]
+        item = self.model.pokedex.listPokemon[item_name]
+        self.update_stats(item)
 
     def substitute_pokemon(self, index, event):
         pos = self.ui.list_item.currentRow()
@@ -54,7 +91,6 @@ class choose_pokemon(QMainWindow):
             if self.model.me.substitute_pokemon(5, item_to_insert):
                 self.update_team()
 
-
     def update_stats(self, item):
         # Set values tableWidget
         self.ui.tableWidget.item(0, 1).setText(item.name)
@@ -70,47 +106,6 @@ class choose_pokemon(QMainWindow):
 
         # Set pixmap
         self.ui.pokemon_img.setPixmap(QtGui.QPixmap('img_pokemon_png/' + item.name.lower() + '.png'))
-
-    def interaction(self):
-        self.ui.add_pokemon.clicked.connect(self.add_pokemon_to_team)
-        self.ui.remove_pokemon.clicked.connect(self.remove_pokemon_from_team)
-        self.ui.list_item.itemClicked.connect(self.view_pokemon)
-        self.ui.button_battle.clicked.connect(self.battle)
-        self.ui.label_1.mouseDoubleClickEvent = partial(self.substitute_pokemon, 1)
-        self.ui.label_2.mouseDoubleClickEvent = partial(self.substitute_pokemon, 2)
-        self.ui.label_3.mouseDoubleClickEvent = partial(self.substitute_pokemon, 3)
-        self.ui.label_4.mouseDoubleClickEvent = partial(self.substitute_pokemon, 4)
-        self.ui.label_5.mouseDoubleClickEvent = partial(self.substitute_pokemon, 5)
-        self.ui.label_6.mouseDoubleClickEvent = partial(self.substitute_pokemon, 6)
-
-
-    def initUI(self):
-        self.model.me = Player()
-        self.model.enemy = Player()
-        self.model.pokedex = Pokedex()
-        self.model.pokedex.readCSVMoves("Pokemon Moves.csv")
-        self.model.pokedex.readCSVPokemon("Kanto Pokemon Spreadsheet.csv")
-        self.names = list(self.model.pokedex.listPokemon.keys())
-        self.model.type_advantages = utils.read_type_advantages("Type Advantages.csv")
-
-        for pokemon_name in self.names:
-            item = QtWidgets.QListWidgetItem()
-            widget = QtWidgets.QWidget()
-
-            widget_item = Ui_widget_item()
-            widget_item.setupUi(widget)
-            movie = QMovie('Sprites/' + pokemon_name.lower() + '.gif')
-            widget_item.label_gif.setMovie(movie)
-            movie.start()
-            widget_item.label_name.setText(pokemon_name)
-            item.setSizeHint(widget.size())
-            self.ui.list_item.addItem(item)
-            self.ui.list_item.setItemWidget(item, widget)
-
-        self.ui.list_item.setCurrentRow(0)
-        item_name = self.names[self.ui.list_item.currentRow()]
-        item = self.model.pokedex.listPokemon[item_name]
-        self.update_stats(item)
 
     def view_pokemon(self):
         pos = self.ui.list_item.currentRow()
@@ -174,31 +169,15 @@ class choose_pokemon(QMainWindow):
 
     def battle(self):
         # me
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Jolteon']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Jolteon']))
         if len(self.model.me.team) == 6:
+            self.change_window = start_battle_window(self.model, self)
             self.hide()
-            self.choose_enemy_pokemon()
-
-            # enemy
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Rattata']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Moltres']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
-
-            change_window = start_battle_window(self.model, self.width(), self.height())
-            change_window.game()
-            self.model.me.team = []
-            self.model.enemy.team = []
-            del change_window
-            self.update_team()
-            self.show()
         else:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
@@ -206,13 +185,6 @@ class choose_pokemon(QMainWindow):
             msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
             msg_box.setText("You have to choose 6 pokemon for the battle.")
             msg_box.exec_()
-
-    def choose_enemy_pokemon(self):
-        while len(self.model.enemy.team) < 6:
-            index = random.randint(0, len(self.model.pokedex.listPokemon) - 1)
-            pokemon = deepcopy(list(self.model.pokedex.listPokemon.values())[index])
-            if pokemon.name not in self.model.enemy.pokemon_names():
-                self.model.enemy.add_pokemon(pokemon)
 
 
 

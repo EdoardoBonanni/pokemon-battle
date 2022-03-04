@@ -1,15 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication
 from choose_pokemon import choose_pokemon
 import sys
-import qdarkstyle
-from Model import Model
-
-#define font
-# font = pygame.font.SysFont('Futura', 30)
-
-#create screen fades
-# intro_fade = ScreenFade(1, BLACK, 4)
-# death_fade = ScreenFade(2, PINK, 4)
+from models.Model import Model
 
 
 def main():

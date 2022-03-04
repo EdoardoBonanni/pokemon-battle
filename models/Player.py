@@ -5,6 +5,7 @@ class Player:
     def __init__(self):
         self.uid = uuid.uuid4().fields[-1] # id univoco Player
         self.team = []
+        self.name = None
 
     def add_pokemon(self, pokemon):
         if len(self.team) < 6:
