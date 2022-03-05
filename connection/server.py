@@ -6,7 +6,8 @@ from connection.message import Message
 class Server:
     def __init__(self):
         self.server = "192.168.1.20"
-        self.port = 5555
+        # self.port = 5555
+        self.port = 5556
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -52,12 +53,14 @@ class Server:
 
                 if gameId in self.messages:
                     message = self.messages[gameId]
+                    message.check_data()
 
                     if not data:
                         break
                     else:
                         if data == "reset":
-                            message.resetWent()
+                            other_player = (p + 1) % 2
+                            message.reset_data(other_player)
                         elif data != "get":
                             message.play(p, data)
 

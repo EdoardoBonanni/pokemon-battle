@@ -588,6 +588,7 @@ class battle_window:
                 utils.reset_team_stats(self.model.me)
                 utils.reset_team_stats(self.model.enemy)
                 self.model.enemy.team = []
+                self.model.enemy.name = ''
                 self.run = False
                 pygame.quit()
                 return None
