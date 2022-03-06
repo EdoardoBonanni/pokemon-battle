@@ -9,11 +9,11 @@ from configuration_dialog import configuration_dialog
 from copy import deepcopy
 
 class start_battle_window(QMainWindow):
-    def __init__(self, model: Model, choose_pokemon_view):
+    def __init__(self, model: Model, choose_pokemon_view, pos_x, pos_y):
         super(start_battle_window, self).__init__()
         # get the Ui_MainWindow.
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self, pos_x, pos_y)
 
         self.parent_view = choose_pokemon_view
         self.model = model
@@ -40,7 +40,7 @@ class start_battle_window(QMainWindow):
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
 
-            battle_window_obj = battle_window(self.model, self.width(), self.height())
+            battle_window_obj = battle_window(self.model, self.width(), self.height(), self.pos().x() + 15, self.pos().y() + 30)
             self.hide()
             battle_window_obj.game()
             self.show()
@@ -64,7 +64,7 @@ class start_battle_window(QMainWindow):
         if self.ui.insert_name.text() != '' and len(self.ui.insert_name.text()) < 25:
             self.model.me.name = self.ui.insert_name.text()
 
-            battle_window_multiplayer_obj = battle_window_multiplayer(self.model, self.width(), self.height())
+            battle_window_multiplayer_obj = battle_window_multiplayer(self.model, self.width(), self.height(), self.pos().x() + 20, self.pos().y() + 25)
             self.hide()
             battle_window_multiplayer_obj.game()
             self.show()

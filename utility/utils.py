@@ -10,7 +10,7 @@ def create_color_mapping():
                      'grass': pygame.Color(120, 200, 80), 'ghost': pygame.Color(112, 88, 152),
                      'flying': pygame.Color(168, 144, 240), 'fire': pygame.Color(240, 128, 48),
                      'fighting': pygame.Color(192, 48, 40), 'electric': pygame.Color(248, 208, 48),
-                     'dragon': pygame.Color(112, 56, 248), 'dark': pygame.Color(112, 88, 72),
+                     'dragon': pygame.Color(112, 56, 248), 'dark': pygame.Color(80, 120, 136),
                      'bug': pygame.Color(168, 184, 32), 'null': pygame.Color(104, 160, 144)}
     return color_mapping
 
@@ -176,3 +176,20 @@ def update_appearance_pokemon(battle_window, player_attacker, value):
         battle_window.pokemon_me_visible = value
     else:
         battle_window.pokemon_enemy_visible = value
+
+def search_move_pokemon(pokemon, move_name):
+    if pokemon.move1.name == move_name:
+        move = pokemon.move1
+    elif pokemon.move2.name == move_name:
+        move = pokemon.move2
+    elif pokemon.move3.name == move_name:
+        move = pokemon.move3
+    else:
+        move = pokemon.move4
+    return move
+
+def search_pokemon(pokemon_team, pokemon_name):
+    for i in range(len(pokemon_team)):
+        if pokemon_team[i].name == pokemon_name:
+            return i
+    return -1

@@ -4,6 +4,7 @@ from pygame.locals import *
 import pygame_gui
 from utility import utils
 from utility import game_single_player
+import os
 
 #define colours
 BG_GREEN = (144, 201, 120)
@@ -15,16 +16,18 @@ BLACK = (0, 0, 0)
 PINK = (235, 65, 54)
 
 class battle_window:
-    def __init__(self, model: Model, width, height):
+    def __init__(self, model: Model, width, height, pos_x, pos_y):
         self.model = model
         self.names = None
         self.i = 0
         self.screen_width = 1300
         self.screen_height = int(1300 * 0.7)
+        os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (pos_x, pos_y)
 
         self.init()
 
     def init(self):
+
         pygame.init()
 
         pygame.display.set_caption('Pokemon Battle')
@@ -522,7 +525,7 @@ class battle_window:
         return pokemon_changed
 
     def game(self):
-        self.FPS = 60
+        self.FPS = 40
         self.run = True
 
         self.start_battle = True

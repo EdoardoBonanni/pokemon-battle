@@ -88,15 +88,6 @@ if __name__ == "__main__":
 
 
 # data = {
-#     "type": "team",
-#     "pokemon_enemy_0": "charizard",
-#     "pokemon_enemy_1": "abra",
-#     "pokemon_enemy_2": "mankey",
-#     "pokemon_enemy_3": "bulbasaur",
-#     "pokemon_enemy_4": "mew",
-#     "pokemon_enemy_5": "moltres"
-# }
-# data = {
 #     "type": "pokemon_fainted",
 #     "pokemon_active_" + str(p): "charizard",
 #     "pokemon_active_" + str((p + 1) % 2): "bulbasaur",

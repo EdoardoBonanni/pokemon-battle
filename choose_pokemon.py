@@ -63,10 +63,10 @@ class choose_pokemon(QMainWindow):
             self.ui.list_item.addItem(item)
             self.ui.list_item.setItemWidget(item, widget)
 
-        self.ui.list_item.setCurrentRow(0)
-        item_name = self.names[self.ui.list_item.currentRow()]
-        item = self.model.pokedex.listPokemon[item_name]
-        self.update_stats(item)
+        # self.ui.list_item.setCurrentRow(0)
+        # item_name = self.names[self.ui.list_item.currentRow()]
+        # item = self.model.pokedex.listPokemon[item_name]
+        # self.update_stats(item)
 
     def substitute_pokemon(self, index, event):
         pos = self.ui.list_item.currentRow()
@@ -113,6 +113,8 @@ class choose_pokemon(QMainWindow):
         if item_name.lower() != self.ui.tableWidget.item(0, 1).text().lower():
             item = self.model.pokedex.listPokemon[item_name]
             self.update_stats(item)
+        self.ui.tableWidget.show()
+        self.ui.text_label.hide()
 
     def add_pokemon_to_team(self):
         pos = self.ui.list_item.currentRow()
@@ -167,16 +169,24 @@ class choose_pokemon(QMainWindow):
             self.ui.label_6.setMovie(movie)
             movie.start()
 
+    def choose_random_pokemon(self):
+        while len(self.model.me.team) < 6:
+            index = random.randint(0, len(self.model.pokedex.listPokemon) - 1)
+            pokemon = deepcopy(list(self.model.pokedex.listPokemon.values())[index])
+            if pokemon.name not in self.model.me.pokemon_names():
+                self.model.me.add_pokemon(pokemon)
+
     def battle(self):
         # me
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
-        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Jolteon']))
+        self.choose_random_pokemon()
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Jolteon']))
         if len(self.model.me.team) == 6:
-            self.change_window = start_battle_window(self.model, self)
+            self.change_window = start_battle_window(self.model, self, self.pos().x() + 15, self.pos().y() + 30)
             self.hide()
         else:
             msg_box = QMessageBox()
