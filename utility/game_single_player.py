@@ -331,7 +331,7 @@ def pokemon_fainted(battle_window, player_attacker, pokemon):
         index = battle_window.model.me.search_pokemon_alive()
         if index != -1:
             battle_window.change_pokemon_menu = True
-            battle_window.pokemon_player_fainted = True
+            # battle_window.pokemon_player_fainted = True
         else:
             battle_window.description_battle = 'YOU LOSE.'
             battle_window.wait(30, False, False)

@@ -131,6 +131,7 @@ class battle_window:
                 self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.39))
             else:
                 self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.33))
+        self.draw_types_pokemon_img(pokemon_me.type1, pokemon_me.type2, True)
         draw_name_me = self.font_name.render(pokemon_me.name, False, (0,0,0))
         self.screen.blit(draw_name_me, (self.screen_width * 0.67, self.screen_height * 0.475))
         self.btn_move1.set_text(str(pokemon_me.move1.name) + ' ' + str(pokemon_me.move1.pp_remain) + '/' + str(pokemon_me.move1.pp))
@@ -155,10 +156,10 @@ class battle_window:
         self.btn_move4.colours['hovered_border'] = color_move4
         self.btn_move4.rebuild()
         if show_type_img:
-            self.draw_types_img(pokemon_me.move1.type, (self.screen_width * 0.645, self.screen_height * 0.788))
-            self.draw_types_img(pokemon_me.move2.type, (self.screen_width * 0.85, self.screen_height * 0.788))
-            self.draw_types_img(pokemon_me.move3.type, (self.screen_width * 0.645, self.screen_height * 0.975))
-            self.draw_types_img(pokemon_me.move4.type, (self.screen_width * 0.85, self.screen_height * 0.975))
+            self.draw_types_moves_img(pokemon_me.move1.type, (self.screen_width * 0.645, self.screen_height * 0.789))
+            self.draw_types_moves_img(pokemon_me.move2.type, (self.screen_width * 0.85, self.screen_height * 0.789))
+            self.draw_types_moves_img(pokemon_me.move3.type, (self.screen_width * 0.645, self.screen_height * 0.976))
+            self.draw_types_moves_img(pokemon_me.move4.type, (self.screen_width * 0.85, self.screen_height * 0.976))
 
         # pokemon enemy
         if len(self.move_up) == 0:
@@ -177,8 +178,24 @@ class battle_window:
                 self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.065))
             else:
                 self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.045))
+        self.draw_types_pokemon_img(pokemon_enemy.type1, pokemon_enemy.type2, False)
         draw_name_enemy = self.font_name.render(pokemon_enemy.name, False, (0,0,0))
         self.screen.blit(draw_name_enemy, (self.screen_width * 0.11, self.screen_height * 0.08))
+
+    def draw_types_pokemon_img(self, type1, type2, pokemon_me):
+        type1_img = pygame.image.load('img/types/' + type1.lower() + '.png').convert_alpha()
+        type1_img = pygame.transform.scale(type1_img, (type1_img.get_width() * 2, type1_img.get_height() * 2))
+        if pokemon_me:
+            self.screen.blit(type1_img, (self.screen_width * 0.86, self.screen_height * 0.5))
+        else:
+            self.screen.blit(type1_img, (self.screen_width * 0.3, self.screen_height * 0.105))
+        if type2 != '':
+            type2_img = pygame.image.load('img/types/' + type2.lower() + '.png').convert_alpha()
+            type2_img = pygame.transform.scale(type2_img, (type2_img.get_width() * 2, type2_img.get_height() * 2))
+            if pokemon_me:
+                self.screen.blit(type2_img, (self.screen_width * 0.92, self.screen_height * 0.5))
+            else:
+                self.screen.blit(type2_img, (self.screen_width * 0.36, self.screen_height * 0.105))
 
     def renderHPBar(self, bar_size, height, position, total_hp, actual_hp):
         percentage = float(actual_hp)/total_hp
@@ -190,9 +207,9 @@ class battle_window:
         bar = pygame.Rect(position, (bar_size*percentage, height))
         self.screen.fill(Color(color), bar)
 
-    def draw_types_img(self, type, position):
+    def draw_types_moves_img(self, type, position):
         type_img = pygame.image.load('img/types/' + type.lower() + '.png').convert_alpha()
-        type_img = pygame.transform.scale(type_img, (self.screen_width * 0.045, self.screen_height * 0.025))
+        type_img = pygame.transform.scale(type_img, (self.screen_width * 0.042, self.screen_height * 0.023))
         self.screen.blit(type_img, position)
 
     def draw_pokemon_choose_menu(self):
@@ -469,56 +486,66 @@ class battle_window:
         # print(x, y)
         for event in pygame.event.get():
             if self.rect_pokemon_list_menu_active.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
             if self.rect_pokemon_list_menu_deactive1.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[1].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 1)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive2.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[2].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 2)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive3.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[3].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 3)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive4.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[4].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 4)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive5.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[5].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 5)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_text_exit.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
         self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'

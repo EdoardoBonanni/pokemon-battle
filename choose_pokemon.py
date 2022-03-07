@@ -179,12 +179,12 @@ class choose_pokemon(QMainWindow):
     def battle(self):
         # me
         self.choose_random_pokemon()
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Gloom']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Kangaskhan']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dragonite']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Graveler']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Jolteon']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Weezing']))
         if len(self.model.me.team) == 6:
             self.change_window = start_battle_window(self.model, self, self.pos().x() + 15, self.pos().y() + 30)
             self.hide()
@@ -195,7 +195,6 @@ class choose_pokemon(QMainWindow):
             msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
             msg_box.setText("You have to choose 6 pokemon for the battle.")
             msg_box.exec_()
-
 
 
 if __name__ == "__main__":

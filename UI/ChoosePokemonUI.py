@@ -60,6 +60,7 @@ class Ui_MainWindow(object):
         self.pokemon_img.setAlignment(QtCore.Qt.AlignCenter)
         self.pokemon_img.setWordWrap(False)
         self.pokemon_img.setObjectName("pokemon_img")
+        self.pokemon_img.setPixmap(QtGui.QPixmap('img/init_img.png'))
         self.gridLayout.addWidget(self.pokemon_img, 0, 9, 1, 1)
 
         self.text_label = QtWidgets.QLabel(self.centralwidget)

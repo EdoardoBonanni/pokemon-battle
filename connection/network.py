@@ -11,7 +11,10 @@ class Network:
         self.p = self.connect()
 
     def getP(self):
-        return self.p
+        if self.p:
+            return self.p
+        else:
+            return None
 
     def connect(self):
         try:

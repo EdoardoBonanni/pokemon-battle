@@ -33,7 +33,7 @@ class start_battle_window(QMainWindow):
             self.choose_enemy_pokemon()
 
             # enemy
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Rattata']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dragonite']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Moltres']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
@@ -69,16 +69,6 @@ class start_battle_window(QMainWindow):
             battle_window_multiplayer_obj.game()
             self.show()
             del battle_window_multiplayer_obj
-
-            # data = {
-            #     "type": "team",
-            #     "pokemon_0": str(self.model.me.team[0].name.lower()),
-            #     "pokemon_1": str(self.model.me.team[1].name.lower()),
-            #     "pokemon_2": str(self.model.me.team[2].name.lower()),
-            #     "pokemon_3": str(self.model.me.team[3].name.lower()),
-            #     "pokemon_4": str(self.model.me.team[4].name.lower()),
-            #     "pokemon_5": str(self.model.me.team[5].name.lower())
-            # }
 
         elif len(self.ui.insert_name.text()) >= 25:
             msg_box = QMessageBox()

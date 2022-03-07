@@ -52,7 +52,12 @@ class battle_window_multiplayer:
         self.move_down = []
 
         self.net = Network()
-        self.player = int(self.net.getP())
+        p = self.net.getP()
+        if p:
+            self.player = int(p)
+        else:
+            self.player = None
+        self.btn_quit = None
 
     def draw_bg(self):
         if not self.draw_bg_img:
@@ -86,7 +91,7 @@ class battle_window_multiplayer:
                                                                    text='Change Pokemon',
                                                                    manager=self.manager,
                                                                    object_id='#btn_change_pokemon')
-
+        if self.btn_quit == None:
             self.btn_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((self.screen_width * 0.25, self.screen_height * 0.90),
                                                                                    (button_width, button_height)),
                                                          text='Quit',
@@ -138,6 +143,7 @@ class battle_window_multiplayer:
                 self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.39))
             else:
                 self.screen.blit(pokemon_me_image, (self.screen_width * 0.04, self.screen_height * 0.33))
+        self.draw_types_pokemon_img(pokemon_me.type1, pokemon_me.type2, True)
         draw_name_me = self.font_name.render(pokemon_me.name, False, (0,0,0))
         self.screen.blit(draw_name_me, (self.screen_width * 0.67, self.screen_height * 0.475))
         self.btn_move1.set_text(str(pokemon_me.move1.name) + ' ' + str(pokemon_me.move1.pp_remain) + '/' + str(pokemon_me.move1.pp))
@@ -162,10 +168,10 @@ class battle_window_multiplayer:
         self.btn_move4.colours['hovered_border'] = color_move4
         self.btn_move4.rebuild()
         if show_type_img:
-            self.draw_types_img(pokemon_me.move1.type, (self.screen_width * 0.645, self.screen_height * 0.788))
-            self.draw_types_img(pokemon_me.move2.type, (self.screen_width * 0.85, self.screen_height * 0.788))
-            self.draw_types_img(pokemon_me.move3.type, (self.screen_width * 0.645, self.screen_height * 0.975))
-            self.draw_types_img(pokemon_me.move4.type, (self.screen_width * 0.85, self.screen_height * 0.975))
+            self.draw_types_moves_img(pokemon_me.move1.type, (self.screen_width * 0.645, self.screen_height * 0.789))
+            self.draw_types_moves_img(pokemon_me.move2.type, (self.screen_width * 0.85, self.screen_height * 0.789))
+            self.draw_types_moves_img(pokemon_me.move3.type, (self.screen_width * 0.645, self.screen_height * 0.976))
+            self.draw_types_moves_img(pokemon_me.move4.type, (self.screen_width * 0.85, self.screen_height * 0.976))
 
         # pokemon enemy
         if len(self.move_up) == 0:
@@ -184,8 +190,24 @@ class battle_window_multiplayer:
                 self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.065))
             else:
                 self.screen.blit(pokemon_enemy_image, (self.screen_width * 0.73, self.screen_height * 0.045))
+        self.draw_types_pokemon_img(pokemon_enemy.type1, pokemon_enemy.type2, False)
         draw_name_enemy = self.font_name.render(pokemon_enemy.name, False, (0,0,0))
         self.screen.blit(draw_name_enemy, (self.screen_width * 0.11, self.screen_height * 0.08))
+
+    def draw_types_pokemon_img(self, type1, type2, pokemon_me):
+        type1_img = pygame.image.load('img/types/' + type1.lower() + '.png').convert_alpha()
+        type1_img = pygame.transform.scale(type1_img, (type1_img.get_width() * 2, type1_img.get_height() * 2))
+        if pokemon_me:
+            self.screen.blit(type1_img, (self.screen_width * 0.86, self.screen_height * 0.5))
+        else:
+            self.screen.blit(type1_img, (self.screen_width * 0.3, self.screen_height * 0.105))
+        if type2 != '':
+            type2_img = pygame.image.load('img/types/' + type2.lower() + '.png').convert_alpha()
+            type2_img = pygame.transform.scale(type2_img, (type2_img.get_width() * 2, type2_img.get_height() * 2))
+            if pokemon_me:
+                self.screen.blit(type2_img, (self.screen_width * 0.92, self.screen_height * 0.5))
+            else:
+                self.screen.blit(type2_img, (self.screen_width * 0.36, self.screen_height * 0.105))
 
     def renderHPBar(self, bar_size, height, position, total_hp, actual_hp):
         percentage = float(actual_hp)/total_hp
@@ -203,9 +225,9 @@ class battle_window_multiplayer:
         draw_hp_number = self.font_hp.render(str(hp_me) + ' / ' + str(self.model.me.team[0].battleHP), False, (0,0,0))
         self.screen.blit(draw_hp_number, (self.screen_width * 0.75, self.screen_height * 0.62))
 
-    def draw_types_img(self, type, position):
+    def draw_types_moves_img(self, type, position):
         type_img = pygame.image.load('img/types/' + type.lower() + '.png').convert_alpha()
-        type_img = pygame.transform.scale(type_img, (self.screen_width * 0.045, self.screen_height * 0.025))
+        type_img = pygame.transform.scale(type_img, (self.screen_width * 0.042, self.screen_height * 0.023))
         self.screen.blit(type_img, position)
 
     def draw_pokemon_choose_menu(self):
@@ -481,66 +503,76 @@ class battle_window_multiplayer:
 
         for event in pygame.event.get():
             if self.rect_pokemon_list_menu_active.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
             if self.rect_pokemon_list_menu_deactive1.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[1].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
                         pokemon_withdrawn = self.model.me.team[0]
                         new_pokemon_active = self.model.me.team[1]
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 1)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive2.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[2].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
                         pokemon_withdrawn = self.model.me.team[0]
                         new_pokemon_active = self.model.me.team[2]
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 2)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive3.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[3].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
                         pokemon_withdrawn = self.model.me.team[0]
                         new_pokemon_active = self.model.me.team[3]
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 3)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive4.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[4].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
                         pokemon_withdrawn = self.model.me.team[0]
                         new_pokemon_active = self.model.me.team[4]
+                        self.special_moves_me = None
+                        self.count_move_me = 0
                         self.model.me.swap_position(0, 4)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_pokemon_list_menu_deactive5.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[5].battleHP_actual > 0:
                         if self.model.me.team[0].battleHP_actual != 0:
                             self.pokemon_changed_not_fainted = True
                         utils.reset_stats(self.model.me.team[0])
-                        self.model.me.swap_position(0, 5)
                         pokemon_withdrawn = self.model.me.team[0]
                         new_pokemon_active = self.model.me.team[5]
+                        self.special_moves_me = None
+                        self.count_move_me = 0
+                        self.model.me.swap_position(0, 5)
                         self.change_pokemon_menu = False
                         pokemon_changed = True
             if self.rect_text_exit.collidepoint(pygame.mouse.get_pos()):
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
         self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
@@ -657,7 +689,7 @@ class battle_window_multiplayer:
                 if not message.data[self.player] and not move_send:
                     if attack:
                         if self.special_moves_me:
-                            special_move = str(self.special_moves_me)
+                            special_move = str(self.special_moves_me.name)
                         else:
                             special_move = 'None'
                         self.prob_accuracy[0] = prob_accuracy
@@ -702,7 +734,7 @@ class battle_window_multiplayer:
 
             self.update_manager_and_display()
 
-    def find_pokemon_fainted(self, pokemon_withdrawn, new_pokemon_active):
+    def find_pokemon_fainted(self):
         pokemon_fainted_send = False
         k = 0
         wait = 5
@@ -718,10 +750,10 @@ class battle_window_multiplayer:
 
             if message:
                 if not message.data[self.player] and not pokemon_fainted_send:
-                    if pokemon_withdrawn and new_pokemon_active:
+                    if self.pokemon_withdrawn and self.new_pokemon_active:
                         data = {'type': 'change_pokemon_fainted',
-                                'pokemon_withdrawn': str(pokemon_withdrawn.name),
-                                'new_pokemon_active': str(new_pokemon_active.name)
+                                'pokemon_withdrawn': str(self.pokemon_withdrawn.name),
+                                'new_pokemon_active': str(self.new_pokemon_active.name)
                                 }
                     else:
                         data = {'type': 'change_pokemon_fainted',
@@ -737,14 +769,15 @@ class battle_window_multiplayer:
                     data_str = message.get_data(other_player)
                     data = ast.literal_eval(data_str)
                     if data['type'] == 'change_pokemon_fainted':
-                        self.pokemon_fainted_data = deepcopy(data)
                         self.pokemon_fainted_found = True
                         self.net.send('reset')
+                        if str(data['pokemon_withdrawn']) != 'None' and str(data['new_pokemon_active']) != 'None':
+                            self.switch_enemy_pokemon(str(data['new_pokemon_active']))
 
-                if self.move_enemy_found:
+                if self.pokemon_fainted_found:
                     k = k + 1
 
-            self.description_battle = 'Waiting for enemy move ...'
+            self.description_battle = 'Waiting for enemy selection ...'
             self.update_battle_window(False, False)
             self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
 
@@ -773,7 +806,23 @@ class battle_window_multiplayer:
             self.update_manager_and_display()
             k += 1
 
-    def read_data(self):
+    def wait_closing_window(self, wait):
+        k = 0
+        while k < wait:
+            self.clock.tick(self.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+                self.manager.process_events(event)
+
+            self.screen.fill(BG)
+            message_server_off = pygame.font.Font("fonts/VT323-Regular.ttf", 60).render('Start the server for multiplayer mode', False, (0,0,0))
+            self.screen.blit(message_server_off, (self.screen_width * 0.17, self.screen_height * 0.45))
+
+            self.update_manager_and_display()
+            k += 1
+
+    def read_data_moves(self):
         if self.enemy_use_attack:
             if self.enemy_move_data['type'] == 'attack':
                 # pokemon_active_str = str(self.enemy_move_data['pokemon_active'])
@@ -794,22 +843,25 @@ class battle_window_multiplayer:
                 # self.pokemon_withdrawn = self.model.pokedex.listPokemon[pokemon_withdrawn_str]
                 new_pokemon_active_str = str(self.enemy_move_data['new_pokemon_active'])
                 # self.new_pokemon_active = self.model.pokedex.listPokemon[new_pokemon_active_str]
-                index = utils.search_pokemon(self.model.enemy.team, new_pokemon_active_str)
-                utils.reset_stats(self.model.enemy.team[0])
-                self.model.enemy.swap_position(0, index)
-                self.pokemon_enemy_visible = False
-                self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], False, True)
-                self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], False, True)
-                self.pokemon_enemy_visible = True
+                self.switch_enemy_pokemon(new_pokemon_active_str)
                 # todo forse (azzerare special_moves_enemy and count_move_enemy)
+
+    def switch_enemy_pokemon(self, new_pokemon_active_name):
+        index = utils.search_pokemon(self.model.enemy.team, new_pokemon_active_name)
+        utils.reset_stats(self.model.enemy.team[0])
+        self.model.enemy.swap_position(0, index)
+        self.pokemon_enemy_visible = False
+        self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], False, True)
+        self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], False, True)
+        self.pokemon_enemy_visible = True
 
     def select_attack(self, move_me):
         prob_accuracy = random.random() * 100
         critic_value = random.uniform(0.85, 1.0)
         self.find_enemy_move(True, move_me, prob_accuracy, critic_value, None, None)
         if self.move_enemy_found and self.enemy_move_data:
-            self.read_data()
-            game_multiplayer.checks_2_turns_attack(self, move_me, self.move_enemy)
+            self.read_data_moves()
+            game_multiplayer.checks_2_turns_attack(self, move_me, self.move_enemy, self.prob_accuracy, self.critic_value)
 
     def game(self):
         self.FPS = 40
@@ -826,7 +878,15 @@ class battle_window_multiplayer:
         self.special_moves_enemy = None
         self.pokemon_me_visible = False
         self.pokemon_enemy_visible = False
+
+        if self.player != None:
+            self.server_off = False
+        else:
+            self.server_off = True
         self.exit_battle = False
+        self.pokemon_fainted = False
+        self.pokemon_me_fainted = False
+        self.pokemon_enemy_fainted = False
 
         self.explosion_sheet = utils.read_spritesheet_explosion('img/explosion_sheet.png')
         trainer_me = utils.read_spritesheet_trainer_me('img/trainer_sheet.png')
@@ -847,7 +907,6 @@ class battle_window_multiplayer:
         self.enemy_use_attack = False
         self.enemy_move_data = None
         self.pokemon_fainted_found = False
-        self.pokemon_fainted_data = None
 
         while self.run:
             self.clock.tick(self.FPS)
@@ -858,8 +917,9 @@ class battle_window_multiplayer:
                 if event.type == pygame.QUIT:
                     self.run = False
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                    if event.ui_element.most_specific_combined_id == self.btn_change_pokemon.most_specific_combined_id:
-                        self.change_pokemon_menu = True
+                    if self.btn_change_pokemon:
+                        if event.ui_element.most_specific_combined_id == self.btn_change_pokemon.most_specific_combined_id:
+                            self.change_pokemon_menu = True
                     if event.ui_element.most_specific_combined_id == self.btn_quit.most_specific_combined_id:
                         self.exit_battle = True
                     if event.ui_element.most_specific_combined_id == self.btn_move1.most_specific_combined_id:
@@ -889,88 +949,123 @@ class battle_window_multiplayer:
 
                 self.manager.process_events(event)
 
-            if self.exit_battle:
-                self.exit_battle_operations()
+            if self.server_off:
+                self.wait_closing_window(50)
                 pygame.quit()
                 return None
-
-            if not self.enemy_lost_connection:
-                if not self.name_enemy_found:
-                    self.find_enemy_name()
-                else:
-                    if not self.team_enemy_found:
-                        self.find_enemy_team()
-                    else:
-                        self.move_enemy_found = False
-                        self.enemy_use_attack = False
-                        self.enemy_move_data = None
-                        self.move_enemy = None
-                        self.prob_accuracy = [None, None]
-                        self.critic_value = [None, None]
-                        if self.pokemon_changed_not_fainted:
-                            self.find_enemy_move(False, None, None, None, self.pokemon_withdrawn, self.new_pokemon_active)
-                            if self.move_enemy_found and self.enemy_move_data:
-                                self.read_data()
-                                game_multiplayer.checks_2_turns_attack(self, None, self.move_enemy)
-                        elif self.special_moves_me != None:
-                            prob_accuracy = random.random() * 100
-                            critic_value = random.uniform(0.85, 1.0)
-                            self.find_enemy_move(True, self.special_moves_me, prob_accuracy, critic_value, None, None)
-                            if self.move_enemy_found and self.enemy_move_data:
-                                self.read_data()
-                                game_multiplayer.checks_2_turns_attack(self, self.special_moves_me, self.move_enemy)
-                        else:
-                            if not self.change_pokemon_menu:
-                                if start_animations:
-                                    self.start_battle_animations(trainer_me, trainer_enemy, False, False)
-                                    self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, True)
-                                    self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, True)
-                                    start_animations = False
-                                    self.pokemon_me_visible = True
-                                    self.pokemon_enemy_visible = True
-                                else:
-                                    self.update_battle_window(True, True)
-                                    self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
-                                self.start_battle = False
-                                self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
-                            else:
-                                change_pokemon, self.pokemon_withdrawn, self.new_pokemon_active = self.change_pokemon()
-                                if change_pokemon:
-                                    self.pokemon_me_visible = False
-                                    self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, False)
-                                    self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, False)
-                                    self.pokemon_me_visible = True
             else:
-                self.pokemon_me_visible = False
-                self.pokemon_enemy_visible = False
-                self.draw_button_battle = False
-                self.change_pokemon_menu = False
-                self.pokemon_changed_not_fainted = False
-                self.reset_buttons()
-                self.name_enemy_found = False
-                self.team_enemy_found = False
-                self.move_enemy_found = False
-                self.pokemon_fainted_found = False
-                self.pokemon_fainted_data = None
-                self.enemy_use_attack = False
-                self.enemy_move_data = None
-                self.pokemon_withdrawn = None
-                self.new_pokemon_active = None
-                self.move_enemy = None
-                self.prob_accuracy = [None, None]
-                self.critic_value = [None, None]
-                self.count_move_me = 0
-                self.count_move_enemy = 0
-                self.special_moves_me = None
-                self.special_moves_enemy = None
-                self.model.enemy.name = ''
-                self.model.enemy.team = []
-                self.start_battle = True
-                start_animations = True
-                self.description_battle = 'Connection with enemy lost.'
-                self.connection_lost_waiting(30)
-                self.net = Network()
-                self.player = int(self.net.getP())
+                if self.exit_battle:
+                    self.exit_battle_operations()
+                    pygame.quit()
+                    return None
+
+                if not self.enemy_lost_connection:
+                    if not self.name_enemy_found:
+                        self.find_enemy_name()
+                    else:
+                        if not self.team_enemy_found:
+                            self.find_enemy_team()
+                        else:
+                            self.move_enemy_found = False
+                            self.enemy_use_attack = False
+                            self.enemy_move_data = None
+                            self.move_enemy = None
+                            self.prob_accuracy = [None, None]
+                            self.critic_value = [None, None]
+                            if self.pokemon_fainted:
+                                if self.pokemon_me_fainted:
+                                    change_pokemon, self.pokemon_withdrawn, self.new_pokemon_active = self.change_pokemon()
+                                    if change_pokemon:
+                                        self.pokemon_me_visible = False
+                                        self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, False)
+                                        self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, False)
+                                        self.pokemon_me_visible = True
+                                        if not self.pokemon_fainted_found:
+                                            self.find_pokemon_fainted()
+                                            if self.pokemon_fainted_found:
+                                                self.pokemon_fainted = False
+                                                self.pokemon_me_fainted = False
+                                                self.pokemon_enemy_fainted = False
+                                                self.pokemon_fainted_found = False
+                                else:
+                                    self.pokemon_withdrawn = None
+                                    self.new_pokemon_active = None
+                                    if not self.pokemon_fainted_found:
+                                        self.find_pokemon_fainted()
+                                        if self.pokemon_fainted_found:
+                                            self.pokemon_fainted = False
+                                            self.pokemon_me_fainted = False
+                                            self.pokemon_enemy_fainted = False
+                                            self.pokemon_fainted_found = False
+                            else:
+                                self.pokemon_fainted = False
+                                self.pokemon_me_fainted = False
+                                self.pokemon_enemy_fainted = False
+                                if self.pokemon_changed_not_fainted:
+                                    self.find_enemy_move(False, None, None, None, self.pokemon_withdrawn, self.new_pokemon_active)
+                                    if self.move_enemy_found and self.enemy_move_data:
+                                        self.read_data_moves()
+                                        game_multiplayer.checks_2_turns_attack(self, None, self.move_enemy, self.prob_accuracy, self.critic_value)
+                                elif self.special_moves_me != None:
+                                    prob_accuracy = random.random() * 100
+                                    critic_value = random.uniform(0.85, 1.0)
+                                    self.find_enemy_move(True, self.special_moves_me, prob_accuracy, critic_value, None, None)
+                                    if self.move_enemy_found and self.enemy_move_data:
+                                        self.read_data_moves()
+                                        game_multiplayer.checks_2_turns_attack(self, self.special_moves_me, self.move_enemy, self.prob_accuracy, self.critic_value)
+                                else:
+                                    if not self.change_pokemon_menu:
+                                        if start_animations:
+                                            self.start_battle_animations(trainer_me, trainer_enemy, False, False)
+                                            self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, True)
+                                            self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, True)
+                                            start_animations = False
+                                            self.pokemon_me_visible = True
+                                            self.pokemon_enemy_visible = True
+                                        else:
+                                            self.update_battle_window(True, True)
+                                            self.draw_hp(self.model.me.team[0].battleHP_actual, self.model.enemy.team[0].battleHP_actual)
+                                        self.start_battle = False
+                                        self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
+                                    else:
+                                        change_pokemon, self.pokemon_withdrawn, self.new_pokemon_active = self.change_pokemon()
+                                        if change_pokemon:
+                                            self.pokemon_me_visible = False
+                                            self.pokeball_animations(10, False, False, False, self.model.me.team[0], self.model.enemy.team[0], True, False)
+                                            self.pokeball_animations(10, False, False, True, self.model.me.team[0], self.model.enemy.team[0], True, False)
+                                            self.pokemon_me_visible = True
+                else:
+                    self.pokemon_me_visible = False
+                    self.pokemon_enemy_visible = False
+                    self.draw_button_battle = False
+                    self.change_pokemon_menu = False
+                    self.pokemon_changed_not_fainted = False
+                    self.reset_buttons()
+                    self.name_enemy_found = False
+                    self.team_enemy_found = False
+                    self.move_enemy_found = False
+                    self.pokemon_fainted_found = False
+                    self.pokemon_fainted_data = None
+                    self.enemy_use_attack = False
+                    self.enemy_move_data = None
+                    self.pokemon_withdrawn = None
+                    self.new_pokemon_active = None
+                    self.move_enemy = None
+                    self.prob_accuracy = [None, None]
+                    self.critic_value = [None, None]
+                    self.count_move_me = 0
+                    self.count_move_enemy = 0
+                    self.special_moves_me = None
+                    self.special_moves_enemy = None
+                    self.model.enemy.name = ''
+                    self.model.enemy.team = []
+                    utils.reset_team_stats(self.model.me)
+                    self.start_battle = True
+                    start_animations = True
+                    self.description_battle = 'Connection lost with enemy.'
+                    self.connection_lost_waiting(30)
+                    self.net = Network()
+                    self.player = int(self.net.getP())
 
             self.update_manager_and_display()
         pygame.quit()

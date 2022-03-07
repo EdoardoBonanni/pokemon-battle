@@ -10,7 +10,7 @@ def create_color_mapping():
                      'grass': pygame.Color(120, 200, 80), 'ghost': pygame.Color(112, 88, 152),
                      'flying': pygame.Color(168, 144, 240), 'fire': pygame.Color(240, 128, 48),
                      'fighting': pygame.Color(192, 48, 40), 'electric': pygame.Color(248, 208, 48),
-                     'dragon': pygame.Color(112, 56, 248), 'dark': pygame.Color(80, 120, 136),
+                     'dragon': pygame.Color(112, 56, 248), 'dark': pygame.Color(112, 88, 72),
                      'bug': pygame.Color(168, 184, 32), 'null': pygame.Color(104, 160, 144)}
     return color_mapping
 

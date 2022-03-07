@@ -1,17 +1,17 @@
 from utility import utils
 import random
 
-def checks_2_turns_attack(battle_window, move_me, move_enemy):
+def checks_2_turns_attack(battle_window, move_me, move_enemy, prob_accuracies, critic_values):
     if battle_window.special_moves_me and battle_window.special_moves_enemy:
-        check_attacks(battle_window, battle_window.special_moves_me, battle_window.special_moves_enemy)
+        check_attacks(battle_window, battle_window.special_moves_me, battle_window.special_moves_enemy, prob_accuracies, critic_values)
     elif battle_window.special_moves_me:
-        check_attacks(battle_window, battle_window.special_moves_me, move_enemy)
+        check_attacks(battle_window, battle_window.special_moves_me, move_enemy, prob_accuracies, critic_values)
     elif battle_window.special_moves_enemy:
-        check_attacks(battle_window, move_me, battle_window.special_moves_enemy)
+        check_attacks(battle_window, move_me, battle_window.special_moves_enemy, prob_accuracies, critic_values)
     else:
-        check_attacks(battle_window, move_me, move_enemy)
+        check_attacks(battle_window, move_me, move_enemy, prob_accuracies, critic_values)
 
-def check_attacks(battle_window, move_me, move_enemy):
+def check_attacks(battle_window, move_me, move_enemy, prob_accuracies, critic_values):
     battle_window.pokemon_changed_not_fainted = False
     if move_me == None and move_enemy:
         # _ = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, None, battle_window.count_move_me)
@@ -19,19 +19,19 @@ def check_attacks(battle_window, move_me, move_enemy):
         battle_window.count_move_enemy = count_move
         utils.update_special_attack(battle_window, special_attack, move_enemy, False)
         if attack_move:
-            second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me)
+            second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me, prob_accuracies[1], critic_values[1])
             utils.reset_special_attack(battle_window, count_move, False)
     elif move_me and move_enemy == None:
         attack_move, count_move, special_attack = determine_special_attack(battle_window, move_me, battle_window.model.me.team[0], battle_window.count_move_me, True)
         battle_window.count_move_me = count_move
         utils.update_special_attack(battle_window, special_attack, move_me, True)
         if attack_move:
-            second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy)
+            second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy, prob_accuracies[0], critic_values[0])
             utils.reset_special_attack(battle_window, count_move, True)
     elif move_me and move_enemy:
-        turn(battle_window, move_me, move_enemy)
+        turn(battle_window, move_me, move_enemy, prob_accuracies, critic_values)
 
-def turn(battle_window, move_me, move_enemy):
+def turn(battle_window, move_me, move_enemy, prob_accuracies, critic_values):
     first_attack_me = determine_first_attacker(battle_window, move_me, move_enemy)
     first_pokemon_fainted = False
     second_pokemon_fainted = False
@@ -40,14 +40,14 @@ def turn(battle_window, move_me, move_enemy):
         battle_window.count_move_me = count_move
         utils.update_special_attack(battle_window, special_attack, move_me, True)
         if attack_move:
-            first_pokemon_fainted, second_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy)
+            first_pokemon_fainted, second_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy, prob_accuracies[0], critic_values[0])
             utils.reset_special_attack(battle_window, count_move, True)
         if not first_pokemon_fainted and not second_pokemon_fainted:
             attack_move, count_move, special_attack = determine_special_attack(battle_window, move_enemy, battle_window.model.enemy.team[0], battle_window.count_move_enemy, False)
             battle_window.count_move_enemy = count_move
             utils.update_special_attack(battle_window, special_attack, move_enemy, False)
             if attack_move:
-                second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me)
+                second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me, prob_accuracies[1], critic_values[1])
                 utils.reset_special_attack(battle_window, count_move, False)
         if first_pokemon_fainted:
             battle_window.count_move_me = 0
@@ -58,14 +58,14 @@ def turn(battle_window, move_me, move_enemy):
         battle_window.count_move_enemy = count_move
         utils.update_special_attack(battle_window, special_attack, move_enemy, False)
         if attack_move:
-            first_pokemon_fainted, second_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me)
+            first_pokemon_fainted, second_pokemon_fainted, count_move = attack(battle_window, battle_window.model.enemy, battle_window.model.me, move_enemy, False, battle_window.count_move_enemy, battle_window.special_moves_me, battle_window.count_move_me, prob_accuracies[1], critic_values[1])
             utils.reset_special_attack(battle_window, count_move, False)
         if not first_pokemon_fainted and not second_pokemon_fainted:
             attack_move, count_move, special_attack = determine_special_attack(battle_window, move_me, battle_window.model.me.team[0], battle_window.count_move_me, True)
             battle_window.count_move_me = count_move
             utils.update_special_attack(battle_window, special_attack, move_me, True)
             if attack_move:
-                second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy)
+                second_pokemon_fainted, first_pokemon_fainted, count_move = attack(battle_window, battle_window.model.me, battle_window.model.enemy, move_me, True, battle_window.count_move_me, battle_window.special_moves_enemy, battle_window.count_move_enemy, prob_accuracies[0], critic_values[0])
                 utils.reset_special_attack(battle_window, count_move, True)
         if first_pokemon_fainted:
             battle_window.count_move_enemy = 0
@@ -118,13 +118,15 @@ def determine_first_attacker(battle_window, move_me, move_enemy):
         elif move_enemy.name == 'Quick Attack' and move_me.name != 'Quick Attack':
             first_attack_me = False
         else:
-            if battle_window.model.me.team[0].battleSpeed >= battle_window.model.enemy.team[0].battleSpeed:
+            if battle_window.model.me.team[0].battleSpeed > battle_window.model.enemy.team[0].battleSpeed:
+                first_attack_me = True
+            elif battle_window.model.me.team[0].battleSpeed == battle_window.model.enemy.team[0].battleSpeed and battle_window.player == 0:
                 first_attack_me = True
             else:
                 first_attack_me = False
     return first_attack_me
 
-def attack(battle_window, attacker, defender, move, player_attacker, count_move_attacker, special_moves_defender, count_move_defender):
+def attack(battle_window, attacker, defender, move, player_attacker, count_move_attacker, special_moves_defender, count_move_defender, prob_accuracy, critic_value):
     # attacker and defender can be self.me or self.enemy
     # This modifier is used in damage calculations; it takes into account type advantage and STAB bonus
     modifier = 1
@@ -152,8 +154,7 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
         move_accuracy = 100
     else:
         move_accuracy = int(move.accuracy.replace('%', ''))
-    prob = random.random() * 100
-    if prob > move_accuracy or always_miss_attack:
+    if prob_accuracy > move_accuracy or always_miss_attack:
         count_move_attacker = 0
         battle_window.description_battle = attacker.team[0].name + ' used ' + move.name + ' but missed attack!'
         battle_window.wait(30, False, False)
@@ -178,7 +179,6 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
             modifier *= attacker.team[0].STAB
 
         # Damage formula also has a random element
-        critic_value = random.uniform(0.85, 1.0)
         modifier *= critic_value
 
         # Appending the useMove function to the output
@@ -322,15 +322,8 @@ def pokemon_fainted(battle_window, player_attacker, pokemon):
         battle_window.wait(30, False, False)
         index = battle_window.model.enemy.search_pokemon_alive()
         if index != -1:
-            # battle_window.model.enemy.swap_position(0, index)
-            battle_window.pokemon_fainted_found = False
-            battle_window.pokemon_fainted_data = None
-
-            battle_window.description_battle = 'The foe chooses ' + battle_window.model.enemy.team[0].name + '.'
-            battle_window.pokemon_enemy_visible = False
-            battle_window.pokeball_animations(10, False, False, False, battle_window.model.me.team[0], battle_window.model.enemy.team[0], False, True)
-            battle_window.pokeball_animations(10, False, False, True, battle_window.model.me.team[0], battle_window.model.enemy.team[0], False, True)
-            battle_window.pokemon_enemy_visible = True
+            battle_window.pokemon_fainted = True
+            battle_window.pokemon_enemy_fainted = True
         else:
             battle_window.description_battle = 'YOU WIN.'
             battle_window.wait(30, False, False)
@@ -340,8 +333,8 @@ def pokemon_fainted(battle_window, player_attacker, pokemon):
         battle_window.wait(30, False, False)
         index = battle_window.model.me.search_pokemon_alive()
         if index != -1:
-            battle_window.change_pokemon_menu = True
-            battle_window.pokemon_player_fainted = True
+            battle_window.pokemon_fainted = True
+            battle_window.pokemon_me_fainted = True
         else:
             battle_window.description_battle = 'YOU LOSE.'
             battle_window.wait(30, False, False)
