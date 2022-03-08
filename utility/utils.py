@@ -1,6 +1,9 @@
 import pygame
 import random
 from Spritesheet.spritesheet import Spritesheet
+from models.Pokemon import Pokemon
+from models.Move import Move
+
 
 def create_color_mapping():
     color_mapping = {'water': pygame.Color(104, 144, 240), 'steel': pygame.Color(184, 184, 208),
@@ -14,6 +17,58 @@ def create_color_mapping():
                      'bug': pygame.Color(168, 184, 32), 'null': pygame.Color(104, 160, 144)}
     return color_mapping
 
+
+def readCSVMoves(filename):
+    listMoves = {}
+    fin = open(filename, 'r')
+    for line in fin:
+        line = line.strip()
+        moveList = line.split(",")
+        if any(map(str.isdigit, moveList[0])):
+            id = moveList[0]
+            name = moveList[1]
+            description = moveList[2]
+            type = moveList[3]
+            kind = moveList[4]
+            power = int(moveList[5])
+            accuracy = moveList[6]
+            pp = int(moveList[7])
+            move = Move(id, name, description, type, kind, power, accuracy, pp)
+            listMoves[
+                name.lower()] = move  # Creating dicticionary with key = name and value is the move object
+    fin.close()
+    return listMoves
+
+
+def readCSVPokemon(listMoves, filename):
+    listPokemon = {}
+    fin = open(filename, 'r')
+    for line in fin:
+        line = line.strip()
+        pokeList = line.split(",")
+        if any(map(str.isdigit, pokeList[0])):
+            id = pokeList[0]
+            name = pokeList[1]
+            type1 = pokeList[2]
+            type2 = pokeList[3]
+            hp = int(pokeList[4])
+            atk = int(pokeList[5])
+            defense = int(pokeList[6])
+            spAtk = int(pokeList[7])
+            spDef = int(pokeList[8])
+            speed = int(pokeList[9])
+            move1 = listMoves[pokeList[10].lower()]
+            move2 = listMoves[pokeList[11].lower()]
+            move3 = listMoves[pokeList[12].lower()]
+            move4 = listMoves[pokeList[13].lower()]
+            total = hp + atk + defense + spAtk + spDef + speed
+            pokemon = Pokemon(id, name, type1, type2, hp, atk, defense, spAtk, spDef, speed, total, move1, move2, move3,
+                              move4)
+            listPokemon[name] = pokemon  # Creating dicticionary with key = name and value is the pokemon object
+    fin.close()
+    return listPokemon
+
+
 def read_type_advantages(filename):
     type_advantages = {}
     fin = open(filename, 'r')
@@ -25,6 +80,7 @@ def read_type_advantages(filename):
     fin.close()
     return type_advantages
 
+
 # Stat modification function; will be called inside the attack function if the move alters the defending Pokemon's stats
 # Takes the current statStage as input and returns a multiplier that will be used to calculate the new statStage
 def statMod(statStage):
@@ -32,11 +88,11 @@ def statMod(statStage):
     if statStage == 1:
         multiplier = 1.5
     elif statStage == -1:
-        multiplier = 2/3
+        multiplier = 2 / 3
     elif statStage == 2:
         multiplier = 2
     elif statStage == -2:
-        multiplier = 1/2
+        multiplier = 1 / 2
     elif statStage == 3:
         multiplier = 2.5
     elif statStage == -3:
@@ -44,16 +100,17 @@ def statMod(statStage):
     elif statStage == 4:
         multiplier = 3
     elif statStage == -4:
-        multiplier = 1/3
+        multiplier = 1 / 3
     elif statStage == 5:
         multiplier = 3.5
     elif statStage == -5:
-        multiplier = 2/7
+        multiplier = 2 / 7
     elif statStage == 6:
         multiplier = 4
     elif statStage == -6:
-        multiplier = 1/4
+        multiplier = 1 / 4
     return multiplier  # This multiplier affects the value of the in-battle stat
+
 
 def read_spritesheet_trainer_me(filename):
     my_spritesheet = Spritesheet(filename)
@@ -66,6 +123,7 @@ def read_spritesheet_trainer_me(filename):
         for i in range(5):
             trainer.append(my_spritesheet.parse_sprite('f_trainer' + str(i + 1) + '.png'))
     return trainer
+
 
 def read_spritesheet_trainer_enemy(filename):
     my_spritesheet = Spritesheet(filename)
@@ -85,12 +143,14 @@ def read_spritesheet_trainer_enemy(filename):
             trainer.append(my_spritesheet.parse_sprite('misty' + str(i + 1) + '.png'))
     return trainer
 
+
 def read_spritesheet_explosion(filename):
     my_spritesheet = Spritesheet(filename)
     explosion = []
     for i in range(39):
         explosion.append(my_spritesheet.parse_sprite('explosion' + str(i + 1) + '.png'))
     return explosion
+
 
 def read_pokeball(pokeball_open, pokeball_type):
     if pokeball_open:
@@ -107,9 +167,12 @@ def read_pokeball(pokeball_open, pokeball_type):
         filename = 'pk_master' + open
     return filename
 
+
 def choose_enemy_move(battle_window):
-    if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[0].move2.pp_remain <= 0 and \
-        battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[0].move4.pp_remain <= 0:
+    if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[
+        0].move2.pp_remain <= 0 and \
+            battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[
+        0].move4.pp_remain <= 0:
         return battle_window.model.enemy.team[0].move1
     while True:
         random_number = random.randint(1, 4)
@@ -123,6 +186,7 @@ def choose_enemy_move(battle_window):
             return battle_window.model.enemy.team[0].move4
     # return battle_window.model.enemy.team[0].move4
 
+
 def update_special_attack(battle_window, special_attack, move, player_me):
     if player_me:
         if special_attack:
@@ -135,6 +199,7 @@ def update_special_attack(battle_window, special_attack, move, player_me):
         else:
             battle_window.special_moves_enemy = None
 
+
 def reset_special_attack(battle_window, count_move, player_me):
     if player_me:
         if count_move == 0:
@@ -144,6 +209,7 @@ def reset_special_attack(battle_window, count_move, player_me):
         if count_move == 0:
             battle_window.special_moves_enemy = None
             battle_window.count_move_enemy = 0
+
 
 def reset_stats(pokemon):
     pokemon.battleATK = pokemon.originalATK
@@ -156,6 +222,7 @@ def reset_stats(pokemon):
     pokemon.spAtkStage = 0
     pokemon.spDefStage = 0
     pokemon.speedStage = 0
+
 
 def reset_team_stats(player):
     for pokemon in player.team:
@@ -171,11 +238,13 @@ def reset_team_stats(player):
         pokemon.spDefStage = 0
         pokemon.speedStage = 0
 
+
 def update_appearance_pokemon(battle_window, player_attacker, value):
     if player_attacker:
         battle_window.pokemon_me_visible = value
     else:
         battle_window.pokemon_enemy_visible = value
+
 
 def search_move_pokemon(pokemon, move_name):
     if pokemon.move1.name == move_name:
@@ -187,6 +256,7 @@ def search_move_pokemon(pokemon, move_name):
     else:
         move = pokemon.move4
     return move
+
 
 def search_pokemon(pokemon_team, pokemon_name):
     for i in range(len(pokemon_team)):

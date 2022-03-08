@@ -131,14 +131,14 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
     # This modifier is used in damage calculations; it takes into account type advantage and STAB bonus
     modifier = 1
     # Calculating Type advantages using "Type Advantages.csv" file
-    for key in battle_window.model.type_advantages:
+    for key in battle_window.model.pokedex.type_advantages:
         # If the attacking and defending types match up, multiply the modifier by the damage multiplier from the list
-        if battle_window.model.type_advantages[key][0] == move.type and battle_window.model.type_advantages[key][1] == defender.team[0].type1:
-            modifier *= float(battle_window.model.type_advantages[key][2])
+        if battle_window.model.pokedex.type_advantages[key][0] == move.type and battle_window.model.pokedex.type_advantages[key][1] == defender.team[0].type1:
+            modifier *= float(battle_window.model.pokedex.type_advantages[key][2])
 
         # Didn't use elif; Just in case you get a 4x or 0.25x modifier based on double type
-        if battle_window.model.type_advantages[key][0] == move.type and battle_window.model.type_advantages[key][1] == defender.team[0].type2:
-            modifier *= float(battle_window.model.type_advantages[key][2])
+        if battle_window.model.pokedex.type_advantages[key][0] == move.type and battle_window.model.pokedex.type_advantages[key][1] == defender.team[0].type2:
+            modifier *= float(battle_window.model.pokedex.type_advantages[key][2])
 
     attacker_fainted = False
     defender_fainted = False
@@ -173,10 +173,10 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
 
         # Calculating STAB (Same-type Attack Bonus)
         if move.type == attacker.team[0].type1:
-            modifier *= attacker.team[0].STAB
+            modifier *= attacker.team[0].stab
 
         elif move.type == attacker.team[0].type2:
-            modifier *= attacker.team[0].STAB
+            modifier *= attacker.team[0].stab
 
         # Damage formula also has a random element
         modifier *= critic_value
@@ -214,9 +214,8 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
 
         # ATK/DEF or SpATK/SpDEF or Status? Using the Pokemon damage formula
         # If the move is "Physical", the damage formula will take into account attack and defense
-        level = 100
         if move.kind == "Physical":
-            damage = int((((2*level) + 10)/250 * (attacker.team[0].battleATK/defender.team[0].battleDEF) * move.power + 2) * modifier)
+            damage = int((((2*attacker.team[0].level) + 10)/250 * (attacker.team[0].battleATK/defender.team[0].battleDEF) * move.power + 2) * modifier)
             hp_lost = defender.team[0].loseHP(damage)
             if move.name == 'Bonemerang' or move.name == 'Double Kick':
                 damage *= 2
@@ -224,7 +223,7 @@ def attack(battle_window, attacker, defender, move, player_attacker, count_move_
                 battle_window.explosion_animations(False, False, not player_attacker)
         # If the move is "Special", the damage formula will take into account special attack and special defense
         elif move.kind == "Special":
-            damage = int((((2*level) + 10)/250 * (attacker.team[0].battleSpATK/defender.team[0].battleSpDEF) * move.power + 2) * modifier)
+            damage = int((((2*attacker.team[0].level) + 10)/250 * (attacker.team[0].battleSpATK/defender.team[0].battleSpDEF) * move.power + 2) * modifier)
             hp_lost = defender.team[0].loseHP(damage)
             if move.name == 'Giga Drain':
                 gain_hp = abs(hp_lost) // 2

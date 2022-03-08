@@ -1,12 +1,9 @@
-
 class Model:
+    """
+    Model class used to keep Players and Pokedex model.
+    """
+
     def __init__(self):
-        # Player me.
-        self.me = None
-        # Player enemy.
-        self.enemy = None
-        # Pokedex.
-        self.pokedex = None
-        #Type Advantages
-        self.type_advantages = {}
-        # Connection.
+        self.me = None  # Player me.
+        self.enemy = None  # Player enemy.
+        self.pokedex = None  # Pokedex with all Pokemon.
