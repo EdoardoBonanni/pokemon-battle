@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from models.Model import Model
 from UI.GameModeSelectionUI import Ui_MainWindow
 from BattleWindowSingleplayer import BattleWindowSingleplayer
-from BattleWindowMultiplayer import battle_window_multiplayer
+from BattleWindowMultiplayer import BattleWindowMultiplayer
 import random
 from copy import deepcopy
 
@@ -48,7 +48,7 @@ class GameModeSelection(QMainWindow):
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
 
-            battle_window_singleplayer_obj = BattleWindowSingleplayer(self.model, self.pos().x() + 15, self.pos().y() + 30)
+            battle_window_singleplayer_obj = BattleWindowSingleplayer(self.model, self.pos().x() + 20, self.pos().y() + 25)
             self.hide()
             battle_window_singleplayer_obj.game()
             self.show()
@@ -76,8 +76,7 @@ class GameModeSelection(QMainWindow):
         if self.ui.insert_name.text() != '' and len(self.ui.insert_name.text()) < 25:
             self.model.me.name = self.ui.insert_name.text()
 
-            battle_window_multiplayer_obj = battle_window_multiplayer(self.model, self.width(), self.height(),
-                                                                      self.pos().x() + 20, self.pos().y() + 25)
+            battle_window_multiplayer_obj = BattleWindowMultiplayer(self.model, self.pos().x() + 20, self.pos().y() + 25)
             self.hide()
             battle_window_multiplayer_obj.game()
             self.show()
