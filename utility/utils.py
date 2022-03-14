@@ -1,11 +1,15 @@
 import pygame
 import random
-from Spritesheet.spritesheet import Spritesheet
+from Spritesheet.Spritesheet import Spritesheet
 from models.Pokemon import Pokemon
 from models.Move import Move
 
 
 def create_color_mapping():
+    """
+    Function that map every Pokemon type in a color.
+    :return: Dictionary created from mapping.
+    """
     color_mapping = {'water': pygame.Color(104, 144, 240), 'steel': pygame.Color(184, 184, 208),
                      'rock': pygame.Color(184, 160, 56), 'psychic': pygame.Color(248, 88, 136),
                      'poison': pygame.Color(160, 64, 160), 'normal': pygame.Color(168, 168, 120),
@@ -18,101 +22,126 @@ def create_color_mapping():
     return color_mapping
 
 
-def readCSVMoves(filename):
-    listMoves = {}
+def readCSV_moves(filename):
+    """
+    Read CSV that contains all attributes for Pokemon moves.
+    :param filename: Filename CSV.
+    :return: Dictionary with all attributes for Pokemon moves.
+    """
+    dict_moves = {}
     fin = open(filename, 'r')
     for line in fin:
         line = line.strip()
-        moveList = line.split(",")
-        if any(map(str.isdigit, moveList[0])):
-            id = moveList[0]
-            name = moveList[1]
-            description = moveList[2]
-            type = moveList[3]
-            kind = moveList[4]
-            power = int(moveList[5])
-            accuracy = moveList[6]
-            pp = int(moveList[7])
+        move_list = line.split(",")
+        if any(map(str.isdigit, move_list[0])):
+            id = move_list[0]
+            name = move_list[1]
+            description = move_list[2]
+            type = move_list[3]
+            kind = move_list[4]
+            power = int(move_list[5])
+            accuracy = move_list[6]
+            pp = int(move_list[7])
             move = Move(id, name, description, type, kind, power, accuracy, pp)
-            listMoves[
-                name.lower()] = move  # Creating dicticionary with key = name and value is the move object
+            dict_moves[
+                name.lower()] = move  # Creating dictionary with key = name and value is the move object.
     fin.close()
-    return listMoves
+    return dict_moves
 
 
-def readCSVPokemon(listMoves, filename):
-    listPokemon = {}
+def readCSV_Pokemon(dict_moves, filename):
+    """
+    Read CSV that contains all attributes for Pokemon.
+    :param dict_moves: Dictionary of Pokemon moves.
+    :param filename: Filename CSV.
+    :return: Dictionary of all Pokemon.
+    """
+    dict_Pokemon = {}
     fin = open(filename, 'r')
     for line in fin:
         line = line.strip()
-        pokeList = line.split(",")
-        if any(map(str.isdigit, pokeList[0])):
-            id = pokeList[0]
-            name = pokeList[1]
-            type1 = pokeList[2]
-            type2 = pokeList[3]
-            hp = int(pokeList[4])
-            atk = int(pokeList[5])
-            defense = int(pokeList[6])
-            spAtk = int(pokeList[7])
-            spDef = int(pokeList[8])
-            speed = int(pokeList[9])
-            move1 = listMoves[pokeList[10].lower()]
-            move2 = listMoves[pokeList[11].lower()]
-            move3 = listMoves[pokeList[12].lower()]
-            move4 = listMoves[pokeList[13].lower()]
+        poke_list = line.split(",")
+        if any(map(str.isdigit, poke_list[0])):
+            id = poke_list[0]
+            name = poke_list[1]
+            type1 = poke_list[2]
+            type2 = poke_list[3]
+            hp = int(poke_list[4])
+            atk = int(poke_list[5])
+            defense = int(poke_list[6])
+            spAtk = int(poke_list[7])
+            spDef = int(poke_list[8])
+            speed = int(poke_list[9])
+            move1 = dict_moves[poke_list[10].lower()]
+            move2 = dict_moves[poke_list[11].lower()]
+            move3 = dict_moves[poke_list[12].lower()]
+            move4 = dict_moves[poke_list[13].lower()]
             total = hp + atk + defense + spAtk + spDef + speed
             pokemon = Pokemon(id, name, type1, type2, hp, atk, defense, spAtk, spDef, speed, total, move1, move2, move3,
                               move4)
-            listPokemon[name] = pokemon  # Creating dicticionary with key = name and value is the pokemon object
+            dict_Pokemon[name] = pokemon  # Creating dictionary with key = name and value is the Pokemon object.
     fin.close()
-    return listPokemon
+    return dict_Pokemon
 
 
 def read_type_advantages(filename):
+    """
+    Read from CSV type advantages among Pokemon.
+    :param filename: Filename CSV.
+    :return: Dictionary of type advantages.
+    """
     type_advantages = {}
     fin = open(filename, 'r')
     for line in fin:
         line = line.strip()
         type_list = line.split(",")
         if any(map(str.isdigit, type_list[0])):
-            type_advantages[(type_list[1], type_list[2])] = [type_list[1], type_list[2], type_list[3]]  # Creating dicticionary with key = (type1, type2) and value the informations of type advantages
+            type_advantages[(type_list[1], type_list[2])] = [type_list[1], type_list[2], type_list[
+                3]]  # Creating dictionary with key = (type1, type2) and value the informations of type advantages.
     fin.close()
     return type_advantages
 
 
-# Stat modification function; will be called inside the attack function if the move alters the defending Pokemon's stats
-# Takes the current statStage as input and returns a multiplier that will be used to calculate the new statStage
-def statMod(statStage):
+def statMod(stat_stage):
+    """
+    Stat modification function that will be called inside the attack function if the move alters the defending Pokemon's stats.
+    :param statStage: Current stats stage.
+    :return: The multiplier that affects the value of the in-battle stat.
+    """
     multiplier = 1
-    if statStage == 1:
+    if stat_stage == 1:
         multiplier = 1.5
-    elif statStage == -1:
+    elif stat_stage == -1:
         multiplier = 2 / 3
-    elif statStage == 2:
+    elif stat_stage == 2:
         multiplier = 2
-    elif statStage == -2:
+    elif stat_stage == -2:
         multiplier = 1 / 2
-    elif statStage == 3:
+    elif stat_stage == 3:
         multiplier = 2.5
-    elif statStage == -3:
+    elif stat_stage == -3:
         multiplier = 0.4
-    elif statStage == 4:
+    elif stat_stage == 4:
         multiplier = 3
-    elif statStage == -4:
+    elif stat_stage == -4:
         multiplier = 1 / 3
-    elif statStage == 5:
+    elif stat_stage == 5:
         multiplier = 3.5
-    elif statStage == -5:
+    elif stat_stage == -5:
         multiplier = 2 / 7
-    elif statStage == 6:
+    elif stat_stage == 6:
         multiplier = 4
-    elif statStage == -6:
+    elif stat_stage == -6:
         multiplier = 1 / 4
-    return multiplier  # This multiplier affects the value of the in-battle stat
+    return multiplier
 
 
 def read_spritesheet_trainer_me(filename):
+    """
+    Read sprite-sheet for trainer animation (player me).
+    :param filename: Filename json.
+    :return: sequence of images.
+    """
     my_spritesheet = Spritesheet(filename)
     rand = random.randint(0, 1)
     trainer = []
@@ -126,6 +155,11 @@ def read_spritesheet_trainer_me(filename):
 
 
 def read_spritesheet_trainer_enemy(filename):
+    """
+    Read sprite-sheet for trainer animation (player enemy).
+    :param filename: Filename json.
+    :return: sequence of images.
+    """
     my_spritesheet = Spritesheet(filename)
     rand = random.randint(0, 3)
     trainer = []
@@ -145,6 +179,11 @@ def read_spritesheet_trainer_enemy(filename):
 
 
 def read_spritesheet_explosion(filename):
+    """
+    Read sprite-sheet for explosion animation.
+    :param filename: Filename json.
+    :return: sequence of images.
+    """
     my_spritesheet = Spritesheet(filename)
     explosion = []
     for i in range(39):
@@ -153,6 +192,12 @@ def read_spritesheet_explosion(filename):
 
 
 def read_pokeball(pokeball_open, pokeball_type):
+    """
+    Choose a random pokeball to visualize.
+    :param pokeball_open: choose if pokeball is open or not.
+    :param pokeball_type: it's the random value for pokeball choice.
+    :return: pokeball filename to read.
+    """
     if pokeball_open:
         open = '_open'
     else:
@@ -169,6 +214,11 @@ def read_pokeball(pokeball_open, pokeball_type):
 
 
 def choose_enemy_move(battle_window):
+    """
+    Choose a random move for enemy Pokemon.
+    :param battle_window: PyGame window.
+    :return: the move selected.
+    """
     if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[
         0].move2.pp_remain <= 0 and \
             battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[
@@ -184,10 +234,17 @@ def choose_enemy_move(battle_window):
             return battle_window.model.enemy.team[0].move3
         elif random_number == 4 and battle_window.model.enemy.team[0].move4.pp_remain > 0:
             return battle_window.model.enemy.team[0].move4
-    # return battle_window.model.enemy.team[0].move4
 
 
 def update_special_attack(battle_window, special_attack, move, player_me):
+    """
+    Update the values of special moves.
+    :param battle_window: PyGame window.
+    :param special_attack: choose if it is a special attack.
+    :param move: Pokemon move.
+    :param player_me: choose if it is Pokemon enemy or me.
+    :return:
+    """
     if player_me:
         if special_attack:
             battle_window.special_moves_me = move
@@ -201,6 +258,13 @@ def update_special_attack(battle_window, special_attack, move, player_me):
 
 
 def reset_special_attack(battle_window, count_move, player_me):
+    """
+    Reset the values of special moves.
+    :param battle_window: PyGame window.
+    :param count_move: Counter of special move.
+    :param player_me: choose if it is Pokemon enemy or me.
+    :return:
+    """
     if player_me:
         if count_move == 0:
             battle_window.special_moves_me = None
@@ -212,6 +276,11 @@ def reset_special_attack(battle_window, count_move, player_me):
 
 
 def reset_stats(pokemon):
+    """
+    Reset Pokemon stats.
+    :param pokemon: Pokemon.
+    :return:
+    """
     pokemon.battleATK = pokemon.originalATK
     pokemon.battleDEF = pokemon.originalDEF
     pokemon.battleSpATK = pokemon.originalSpATK
@@ -225,21 +294,24 @@ def reset_stats(pokemon):
 
 
 def reset_team_stats(player):
+    """
+    Reset Pokemon team stats.
+    :param player: Player me or enemy.
+    :return:
+    """
     for pokemon in player.team:
         pokemon.battleHP_actual = pokemon.battleHP
-        pokemon.battleATK = pokemon.originalATK
-        pokemon.battleDEF = pokemon.originalDEF
-        pokemon.battleSpATK = pokemon.originalSpATK
-        pokemon.battleSpDEF = pokemon.originalSpDEF
-        pokemon.battleSpeed = pokemon.originalSpeed
-        pokemon.atkStage = 0
-        pokemon.defStage = 0
-        pokemon.spAtkStage = 0
-        pokemon.spDefStage = 0
-        pokemon.speedStage = 0
+        reset_stats(pokemon)
 
 
 def update_appearance_pokemon(battle_window, player_attacker, value):
+    """
+    Update the appearance of Pokemon based on moves in the window.
+    :param battle_window: PyGame window.
+    :param player_attacker: Player me or enemy.
+    :param value: choose if Pokemon is visible or not.
+    :return:
+    """
     if player_attacker:
         battle_window.pokemon_me_visible = value
     else:
@@ -247,6 +319,12 @@ def update_appearance_pokemon(battle_window, player_attacker, value):
 
 
 def search_move_pokemon(pokemon, move_name):
+    """
+    Search a Pokemon move.
+    :param pokemon: Pokemon.
+    :param move_name: move name.
+    :return: move selected.
+    """
     if pokemon.move1.name == move_name:
         move = pokemon.move1
     elif pokemon.move2.name == move_name:
@@ -259,6 +337,12 @@ def search_move_pokemon(pokemon, move_name):
 
 
 def search_pokemon(pokemon_team, pokemon_name):
+    """
+    Search a Pokemon.
+    :param pokemon_team: Pokemon team.
+    :param pokemon_name: Pokemon name.
+    :return: index of Pokemon selected or -1.
+    """
     for i in range(len(pokemon_team)):
         if pokemon_team[i].name == pokemon_name:
             return i
