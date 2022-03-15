@@ -3,6 +3,7 @@ import random
 from Spritesheet.Spritesheet import Spritesheet
 from models.Pokemon import Pokemon
 from models.Move import Move
+from utility import show_screen_elements
 
 
 def create_color_mapping():
@@ -347,3 +348,48 @@ def search_pokemon(pokemon_team, pokemon_name):
         if pokemon_team[i].name == pokemon_name:
             return i
     return -1
+
+
+def determine_special_attack(BattleWindow, move, pokemon, count_move, player_me):
+    """
+    Determine the special move type of the Pokemon.
+    :param BattleWindow: BattleWindow singleplayer/multiplayer.
+    :param move: Pokemon move.
+    :param pokemon: Pokemon.
+    :param count_move: counter of special move.
+    :param player_me: check if player me or enemy.
+    :return: [attack_move, count_move, special_attack] = check if it's an attack move, counter of special move and the special attack move.
+    """
+    attack_move = True
+    special_attack = False
+    update_appearance_pokemon(BattleWindow, player_me, True)
+    if move.name.lower() == 'solarbeam' and count_move == 0:
+        BattleWindow.description_battle = pokemon.name + ' absorbed light!'
+        attack_move = False
+        special_attack = True
+        count_move += 1
+    elif move.name.lower() == 'fly' and count_move == 0:
+        BattleWindow.description_battle = pokemon.name + ' flew up high!'
+        update_appearance_pokemon(BattleWindow, player_me, False)
+        attack_move = False
+        special_attack = True
+        count_move += 1
+    elif move.name.lower() == 'dig' and count_move == 0:
+        BattleWindow.description_battle = pokemon.name + ' dug underground!'
+        update_appearance_pokemon(BattleWindow, player_me, False)
+        attack_move = False
+        special_attack = True
+        count_move += 1
+    elif move.name.lower() == 'hyper beam':
+        if count_move == 0:
+            count_move += 1
+            special_attack = True
+        else:
+            BattleWindow.description_battle = pokemon.name + ' must recharge!'
+            count_move = 0
+            attack_move = False
+    else:
+        count_move = 0
+    if not attack_move:
+        show_screen_elements.wait(BattleWindow, 30, False, False)
+    return attack_move, count_move, special_attack
