@@ -671,11 +671,11 @@ class BattleWindowMultiplayer:
         # while to run the Game.
         while self.run:
             self.clock.tick(self.FPS)
-
             _ = self.keep_connection()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.exit_battle = True
                     self.run = False
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
                     if self.btn_change_pokemon:

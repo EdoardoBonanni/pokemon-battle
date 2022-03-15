@@ -41,8 +41,8 @@ class GameModeSelection(QMainWindow):
             self.model.me.name = self.ui.insert_name.text()
             self.choose_enemy_pokemon()
 
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dragonite']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Moltres']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Squirtle']))
+            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))

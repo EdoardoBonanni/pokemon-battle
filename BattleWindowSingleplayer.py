@@ -222,6 +222,7 @@ class BattleWindowSingleplayer:
             self.clock.tick(self.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.exit_battle = True
                     self.run = False
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element.most_specific_combined_id == self.btn_change_pokemon.most_specific_combined_id:
@@ -244,7 +245,7 @@ class BattleWindowSingleplayer:
             # check if Pokemon in battle is changed and not fainted, if so the enemy has to attack.
             if self.pokemon_changed_not_fainted:
                 move_enemy = utils.choose_enemy_move(self)
-                game_singleplayer.check_attacks(self, None, move_enemy)
+                game_singleplayer.check_turn_type(self, None, move_enemy)
             # check if Pokemon of player me do a special move.
             elif self.special_moves_me is not None:
                 move_enemy = utils.choose_enemy_move(self)

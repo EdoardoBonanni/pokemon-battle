@@ -211,7 +211,7 @@ class ChoosePokemon(QMainWindow):
         :return:
         """
         self.choose_random_pokemon()
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Kangaskhan']))
+        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dragonite']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Graveler']))
