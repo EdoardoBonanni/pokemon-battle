@@ -39,14 +39,14 @@ class GameModeSelection(QMainWindow):
         """
         if self.ui.insert_name.text() != '' and len(self.ui.insert_name.text()) < 25:
             self.model.me.name = self.ui.insert_name.text()
-            self.choose_enemy_pokemon()
+            # self.choose_enemy_pokemon()
 
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Squirtle']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Machamp']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
-            # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
+            self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
+            self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
+            self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
+            self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Weezing']))
+            self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+            self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dodrio']))
 
             battle_window_singleplayer_obj = BattleWindowSingleplayer(self.model, self.pos().x() + 20, self.pos().y() + 25)
             self.hide()

@@ -210,13 +210,13 @@ class ChoosePokemon(QMainWindow):
         Start the battle if the team is full, else warning message.
         :return:
         """
-        self.choose_random_pokemon()
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Dragonite']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Marowak']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Graveler']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
-        # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Weezing']))
+        # self.choose_random_pokemon()
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Charizard']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Weezing']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Fearow']))
+        self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Diglett']))
         if len(self.model.me.team) == 6:
             self.change_window = GameModeSelection(self.model, self, self.pos().x() + 15, self.pos().y() + 30)
             self.hide()
