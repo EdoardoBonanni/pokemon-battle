@@ -56,8 +56,8 @@ def classic_turn(BattleWindow, move_me, move_enemy):
     :return:
     """
     first_attack_me = determine_first_attacker(BattleWindow, move_me, move_enemy)
-    first_pokemon_fainted = False
-    second_pokemon_fainted = False
+    pokemon_fainted_me = False
+    pokemon_fainted_enemy = False
     # first attack player me.
     if first_attack_me:
         attack_move, count_move, special_attack = utils.determine_special_attack(BattleWindow, move_me,
@@ -67,14 +67,16 @@ def classic_turn(BattleWindow, move_me, move_enemy):
         utils.update_special_attack(BattleWindow, special_attack, move_me, True)
         # check if the move is an attack.
         if attack_move:
-            first_pokemon_fainted, second_pokemon_fainted, count_move = attack(BattleWindow, BattleWindow.model.me,
+            pokemon_fainted_me, pokemon_fainted_enemy, count_move = attack(BattleWindow, BattleWindow.model.me,
                                                                                BattleWindow.model.enemy, move_me, True,
                                                                                BattleWindow.count_move_me,
                                                                                BattleWindow.special_moves_enemy,
                                                                                BattleWindow.count_move_enemy)
             utils.reset_special_attack(BattleWindow, count_move, True)
+        BattleWindow.description_battle = ""
+        show_screen_elements.wait(BattleWindow, 10, False, False)
         # check if a Pokemon is fainted and the enemy attacks.
-        if not first_pokemon_fainted and not second_pokemon_fainted:
+        if not pokemon_fainted_me and not pokemon_fainted_enemy:
             attack_move, count_move, special_attack = utils.determine_special_attack(BattleWindow, move_enemy,
                                                                                      BattleWindow.model.enemy.team[0],
                                                                                      BattleWindow.count_move_enemy,
@@ -83,7 +85,7 @@ def classic_turn(BattleWindow, move_me, move_enemy):
             utils.update_special_attack(BattleWindow, special_attack, move_enemy, False)
             # check if the move is an attack.
             if attack_move:
-                second_pokemon_fainted, first_pokemon_fainted, count_move = attack(BattleWindow,
+                pokemon_fainted_enemy, pokemon_fainted_me, count_move = attack(BattleWindow,
                                                                                    BattleWindow.model.enemy,
                                                                                    BattleWindow.model.me, move_enemy,
                                                                                    False,
@@ -91,11 +93,16 @@ def classic_turn(BattleWindow, move_me, move_enemy):
                                                                                    BattleWindow.special_moves_me,
                                                                                    BattleWindow.count_move_me)
                 utils.reset_special_attack(BattleWindow, count_move, False)
+            BattleWindow.description_battle = ""
+            show_screen_elements.wait(BattleWindow, 10, False, False)
         # reset special move count if Pokemon fainted.
-        if first_pokemon_fainted:
+        if pokemon_fainted_me:
             BattleWindow.count_move_me = 0
-        if second_pokemon_fainted:
+            BattleWindow.special_moves_me = None
+        if pokemon_fainted_enemy:
             BattleWindow.count_move_enemy = 0
+            BattleWindow.special_moves_enemy = None
+
     # first attack player enemy.
     else:
         attack_move, count_move, special_attack = utils.determine_special_attack(BattleWindow, move_enemy,
@@ -105,14 +112,16 @@ def classic_turn(BattleWindow, move_me, move_enemy):
         utils.update_special_attack(BattleWindow, special_attack, move_enemy, False)
         # check if the move is an attack.
         if attack_move:
-            first_pokemon_fainted, second_pokemon_fainted, count_move = attack(BattleWindow, BattleWindow.model.enemy,
+            pokemon_fainted_enemy, pokemon_fainted_me, count_move = attack(BattleWindow, BattleWindow.model.enemy,
                                                                                BattleWindow.model.me, move_enemy,
                                                                                False, BattleWindow.count_move_enemy,
                                                                                BattleWindow.special_moves_me,
                                                                                BattleWindow.count_move_me)
             utils.reset_special_attack(BattleWindow, count_move, False)
+        BattleWindow.description_battle = ""
+        show_screen_elements.wait(BattleWindow, 10, False, False)
         # check if a Pokemon is fainted and the enemy attacks.
-        if not first_pokemon_fainted and not second_pokemon_fainted:
+        if not pokemon_fainted_enemy and not pokemon_fainted_me:
             attack_move, count_move, special_attack = utils.determine_special_attack(BattleWindow, move_me,
                                                                                      BattleWindow.model.me.team[0],
                                                                                      BattleWindow.count_move_me, True)
@@ -120,18 +129,22 @@ def classic_turn(BattleWindow, move_me, move_enemy):
             utils.update_special_attack(BattleWindow, special_attack, move_me, True)
             # check if the move is an attack.
             if attack_move:
-                second_pokemon_fainted, first_pokemon_fainted, count_move = attack(BattleWindow,
+                pokemon_fainted_me, pokemon_fainted_enemy, count_move = attack(BattleWindow,
                                                                                    BattleWindow.model.me,
                                                                                    BattleWindow.model.enemy, move_me,
                                                                                    True, BattleWindow.count_move_me,
                                                                                    BattleWindow.special_moves_enemy,
                                                                                    BattleWindow.count_move_enemy)
                 utils.reset_special_attack(BattleWindow, count_move, True)
+            BattleWindow.description_battle = ""
+            show_screen_elements.wait(BattleWindow, 10, False, False)
         # reset special move count if Pokemon fainted.
-        if first_pokemon_fainted:
+        if pokemon_fainted_enemy:
             BattleWindow.count_move_enemy = 0
-        if second_pokemon_fainted:
+            BattleWindow.special_moves_enemy = None
+        if pokemon_fainted_me:
             BattleWindow.count_move_me = 0
+            BattleWindow.special_moves_me = None
 
 
 def determine_first_attacker(BattleWindow, move_me, move_enemy):
@@ -202,6 +215,7 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
     # check move type and define move accuracy.
     if move.kind != "Physical" and move.kind != 'Special':
         move_accuracy = 100
+        always_miss_attack = False
     else:
         move_accuracy = int(move.accuracy.replace('%', ''))
     prob = random.random() * 100
@@ -241,6 +255,8 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
                 if special_moves_defender:
                     if special_moves_defender.name.lower() != 'dig' and count_move_defender != 1 and move.name.lower() != 'earthquake':
                         show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
+                    elif (special_moves_defender.name.lower() == 'solarbeam' or special_moves_defender.name.lower() == 'hyper beam') and count_move_defender == 1:
+                        show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
                     else:
                         show_screen_elements.wait(BattleWindow, 30, False, False)
                 else:
@@ -249,12 +265,11 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
                 BattleWindow.description_battle = move.name + ' has no effect on ' + defender_model.team[0].name + '.'
                 show_screen_elements.wait(BattleWindow, 30, False, False)
             else:
-                BattleWindow.description_battle = attacker_model.team[
-                                                      0].name + ' used ' + move.name + '. It\'s ' + effectiveness + '.'
+                BattleWindow.description_battle = attacker_model.team[0].name + ' used ' + move.name + '. It\'s ' + effectiveness + '.'
                 if special_moves_defender:
                     if special_moves_defender.name.lower() != 'dig' and count_move_defender != 1 and move.name.lower() != 'earthquake':
                         show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
-                    elif special_moves_defender.name.lower() == 'solarbeam' and count_move_defender == 1:
+                    elif (special_moves_defender.name.lower() == 'solarbeam' or special_moves_defender.name.lower() == 'hyper beam') and count_move_defender == 1:
                         show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
                     else:
                         show_screen_elements.wait(BattleWindow, 30, False, False)

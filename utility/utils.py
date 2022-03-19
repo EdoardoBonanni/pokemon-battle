@@ -214,33 +214,34 @@ def read_pokeball(pokeball_open, pokeball_type):
     return filename
 
 
-def choose_enemy_move(battle_window):
+def choose_enemy_move(BattleWindow):
     """
     Choose a random move for enemy Pokemon.
-    :param battle_window: PyGame window.
+    :param BattleWindow: PyGame window.
     :return: the move selected.
     """
-    if battle_window.model.enemy.team[0].move1.pp_remain <= 0 and battle_window.model.enemy.team[
+    if BattleWindow.model.enemy.team[0].move1.pp_remain <= 0 and BattleWindow.model.enemy.team[
         0].move2.pp_remain <= 0 and \
-            battle_window.model.enemy.team[0].move3.pp_remain <= 0 and battle_window.model.enemy.team[
+            BattleWindow.model.enemy.team[0].move3.pp_remain <= 0 and BattleWindow.model.enemy.team[
         0].move4.pp_remain <= 0:
-        return battle_window.model.enemy.team[0].move1
+        return BattleWindow.model.enemy.team[0].move1
     while True:
+        # random_number = 4  # used for testing.
         random_number = random.randint(1, 4)
-        if random_number == 1 and battle_window.model.enemy.team[0].move1.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move1
-        elif random_number == 2 and battle_window.model.enemy.team[0].move2.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move2
-        elif random_number == 3 and battle_window.model.enemy.team[0].move3.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move3
-        elif random_number == 4 and battle_window.model.enemy.team[0].move4.pp_remain > 0:
-            return battle_window.model.enemy.team[0].move4
+        if random_number == 1 and BattleWindow.model.enemy.team[0].move1.pp_remain > 0:
+            return BattleWindow.model.enemy.team[0].move1
+        elif random_number == 2 and BattleWindow.model.enemy.team[0].move2.pp_remain > 0:
+            return BattleWindow.model.enemy.team[0].move2
+        elif random_number == 3 and BattleWindow.model.enemy.team[0].move3.pp_remain > 0:
+            return BattleWindow.model.enemy.team[0].move3
+        elif random_number == 4 and BattleWindow.model.enemy.team[0].move4.pp_remain > 0:
+            return BattleWindow.model.enemy.team[0].move4
 
 
-def update_special_attack(battle_window, special_attack, move, player_me):
+def update_special_attack(BattleWindow, special_attack, move, player_me):
     """
     Update the values of special moves.
-    :param battle_window: PyGame window.
+    :param BattleWindow: PyGame window.
     :param special_attack: choose if it is a special attack.
     :param move: Pokemon move.
     :param player_me: choose if it is Pokemon enemy or me.
@@ -248,32 +249,32 @@ def update_special_attack(battle_window, special_attack, move, player_me):
     """
     if player_me:
         if special_attack:
-            battle_window.special_moves_me = move
+            BattleWindow.special_moves_me = move
         else:
-            battle_window.special_moves_me = None
+            BattleWindow.special_moves_me = None
     else:
         if special_attack:
-            battle_window.special_moves_enemy = move
+            BattleWindow.special_moves_enemy = move
         else:
-            battle_window.special_moves_enemy = None
+            BattleWindow.special_moves_enemy = None
 
 
-def reset_special_attack(battle_window, count_move, player_me):
+def reset_special_attack(BattleWindow, count_move, player_me):
     """
     Reset the values of special moves.
-    :param battle_window: PyGame window.
+    :param BattleWindow: PyGame window.
     :param count_move: Counter of special move.
     :param player_me: choose if it is Pokemon enemy or me.
     :return:
     """
     if player_me:
         if count_move == 0:
-            battle_window.special_moves_me = None
-            battle_window.count_move_me = 0
+            BattleWindow.special_moves_me = None
+            BattleWindow.count_move_me = 0
     else:
         if count_move == 0:
-            battle_window.special_moves_enemy = None
-            battle_window.count_move_enemy = 0
+            BattleWindow.special_moves_enemy = None
+            BattleWindow.count_move_enemy = 0
 
 
 def reset_stats(pokemon):
@@ -292,6 +293,10 @@ def reset_stats(pokemon):
     pokemon.spAtkStage = 0
     pokemon.spDefStage = 0
     pokemon.speedStage = 0
+    pokemon.move1.pp_remain = pokemon.move1.pp
+    pokemon.move2.pp_remain = pokemon.move2.pp
+    pokemon.move3.pp_remain = pokemon.move3.pp
+    pokemon.move4.pp_remain = pokemon.move4.pp
 
 
 def reset_team_stats(player):
@@ -305,18 +310,18 @@ def reset_team_stats(player):
         reset_stats(pokemon)
 
 
-def update_appearance_pokemon(battle_window, player_attacker, value):
+def update_appearance_pokemon(BattleWindow, player_attacker, value):
     """
     Update the appearance of Pokemon based on moves in the window.
-    :param battle_window: PyGame window.
+    :param BattleWindow: PyGame window.
     :param player_attacker: Player me or enemy.
     :param value: choose if Pokemon is visible or not.
     :return:
     """
     if player_attacker:
-        battle_window.pokemon_me_visible = value
+        BattleWindow.pokemon_me_visible = value
     else:
-        battle_window.pokemon_enemy_visible = value
+        BattleWindow.pokemon_enemy_visible = value
 
 
 def search_move_pokemon(pokemon, move_name):

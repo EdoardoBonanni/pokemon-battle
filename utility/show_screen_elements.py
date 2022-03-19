@@ -477,6 +477,7 @@ def exit_battle_operations(BattleWindow):
     BattleWindow.model.enemy.team = []
     BattleWindow.model.enemy.name = ''
     BattleWindow.run = False
+    BattleWindow
 
 
 def basic_events(BattleWindow):
