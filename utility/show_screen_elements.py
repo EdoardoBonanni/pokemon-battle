@@ -18,7 +18,7 @@ def draw_battle_description(BattleWindow, text):
     else:
         BattleWindow.battle_description = pygame.font.Font("fonts/VT323-Regular.ttf", 85).render(text, False, (0, 0, 0))
         BattleWindow.screen.blit(BattleWindow.battle_description,
-                                 (BattleWindow.screen_width * 0.43, BattleWindow.screen_height * 0.84))
+                                 (BattleWindow.screen_width * 0.41, BattleWindow.screen_height * 0.84))
 
 
 def draw_button_moves(BattleWindow):

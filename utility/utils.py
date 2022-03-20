@@ -293,10 +293,6 @@ def reset_stats(pokemon):
     pokemon.spAtkStage = 0
     pokemon.spDefStage = 0
     pokemon.speedStage = 0
-    pokemon.move1.pp_remain = pokemon.move1.pp
-    pokemon.move2.pp_remain = pokemon.move2.pp
-    pokemon.move3.pp_remain = pokemon.move3.pp
-    pokemon.move4.pp_remain = pokemon.move4.pp
 
 
 def reset_team_stats(player):
@@ -307,6 +303,10 @@ def reset_team_stats(player):
     """
     for pokemon in player.team:
         pokemon.battleHP_actual = pokemon.battleHP
+        pokemon.move1.pp_remain = pokemon.move1.pp
+        pokemon.move2.pp_remain = pokemon.move2.pp
+        pokemon.move3.pp_remain = pokemon.move3.pp
+        pokemon.move4.pp_remain = pokemon.move4.pp
         reset_stats(pokemon)
 
 
