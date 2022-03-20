@@ -633,6 +633,8 @@ def explosion_animations(BattleWindow, show_button, show_type_img, animation_pok
         BattleWindow.update_battle_window(show_button, show_type_img)
         draw_hp(BattleWindow, BattleWindow.model.me.team[0].battleHP_actual,
                                        BattleWindow.model.enemy.team[0].battleHP_actual)
+        pygame.mixer.Channel(1).set_volume(0.1)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('sounds/explosion.wav'))
         if animation_pokemon_me:
             explosion = pygame.transform.scale(BattleWindow.explosion_sheet[k], (
                 BattleWindow.explosion_sheet[k].get_width() * 1.5,
