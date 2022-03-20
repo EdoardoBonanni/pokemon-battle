@@ -200,7 +200,7 @@ def determine_first_attacker(battle_window, move_me, move_enemy):
     return first_attack_me
 
 
-def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_attacker, special_moves_defender,
+def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, count_move_attacker, special_moves_defender,
            count_move_defender, prob_accuracy, critic_value):
     """
     It allows to handle all Pokemon move types and the relative features.
@@ -222,11 +222,11 @@ def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_a
     for key in BattleWindow.model.pokedex.type_advantages:
         # if the attacking and defending types match up, multiply the modifier by the damage multiplier from the list.
         if BattleWindow.model.pokedex.type_advantages[key][0] == move.type and \
-                BattleWindow.model.pokedex.type_advantages[key][1] == defender.team[0].type1:
+                BattleWindow.model.pokedex.type_advantages[key][1] == defender_model.team[0].type1:
             modifier *= float(BattleWindow.model.pokedex.type_advantages[key][2])
 
         if BattleWindow.model.pokedex.type_advantages[key][0] == move.type and \
-                BattleWindow.model.pokedex.type_advantages[key][1] == defender.team[0].type2:
+                BattleWindow.model.pokedex.type_advantages[key][1] == defender_model.team[0].type2:
             modifier *= float(BattleWindow.model.pokedex.type_advantages[key][2])
 
     attacker_fainted = False
@@ -249,7 +249,7 @@ def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_a
         move_accuracy = int(move.accuracy.replace('%', ''))
     if prob_accuracy > move_accuracy or always_miss_attack:
         count_move_attacker = 0
-        BattleWindow.description_battle = attacker.team[0].name + ' used ' + move.name + ' but missed attack!'
+        BattleWindow.description_battle = attacker_model.team[0].name + ' used ' + move.name + ' but missed attack!'
         show_screen_elements.wait(BattleWindow, 30, False, False)
     elif move.pp_remain <= 0:
         BattleWindow.description_battle = move.name + ' has no pp remain!'
@@ -266,18 +266,18 @@ def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_a
             effectiveness = 'not very effective'
 
         # calculating STAB (Same-type Attack Bonus).
-        if move.type == attacker.team[0].type1:
-            modifier *= attacker.team[0].stab
+        if move.type == attacker_model.team[0].type1:
+            modifier *= attacker_model.team[0].stab
 
-        elif move.type == attacker.team[0].type2:
-            modifier *= attacker.team[0].stab
+        elif move.type == attacker_model.team[0].type2:
+            modifier *= attacker_model.team[0].stab
 
         modifier *= critic_value
 
         # check move types, show battle descriptions and the animations.
         if move.kind == "Physical" or move.kind == "Special":
             if effectiveness == 'normal effective':
-                BattleWindow.description_battle = attacker.team[0].name + ' used ' + move.name + '.'
+                BattleWindow.description_battle = attacker_model.team[0].name + ' used ' + move.name + '.'
                 if special_moves_defender:
                     if special_moves_defender.name.lower() != 'dig' and count_move_defender != 1 and move.name.lower() != 'earthquake':
                         show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
@@ -288,10 +288,10 @@ def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_a
                 else:
                     show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
             elif effectiveness == 'not effect':
-                BattleWindow.description_battle = move.name + ' has no effect on ' + defender.team[0].name + '.'
+                BattleWindow.description_battle = move.name + ' has no effect on ' + defender_model.team[0].name + '.'
                 show_screen_elements.wait(BattleWindow, 30, False, False)
             else:
-                BattleWindow.description_battle = attacker.team[0].name + ' used ' + move.name + '. It\'s ' + effectiveness + '.'
+                BattleWindow.description_battle = attacker_model.team[0].name + ' used ' + move.name + '. It\'s ' + effectiveness + '.'
                 if special_moves_defender:
                     if special_moves_defender.name.lower() != 'dig' and count_move_defender != 1 and move.name.lower() != 'earthquake':
                         show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
@@ -302,7 +302,7 @@ def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_a
                 else:
                     show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
         else:
-            BattleWindow.description_battle = attacker.team[0].name + ' used ' + move.name + '.'
+            BattleWindow.description_battle = attacker_model.team[0].name + ' used ' + move.name + '.'
             show_screen_elements.wait(BattleWindow, 30, False, False)
 
         # check if attack does a critical hit.
@@ -312,118 +312,118 @@ def attack(BattleWindow, attacker, defender, move, player_attacker, count_move_a
 
         # if the move is "Physical", the damage formula will take into account attack and defense.
         if move.kind == "Physical":
-            damage = int((((2 * attacker.team[0].level) + 10) / 250 * (
-                    attacker.team[0].battleATK / defender.team[0].battleDEF) * move.power + 2) * modifier)
-            hp_lost = defender.team[0].loseHP(damage)
+            damage = int((((2 * attacker_model.team[0].level) + 10) / 250 * (
+                    attacker_model.team[0].battleATK / defender_model.team[0].battleDEF) * move.power + 2) * modifier)
             if move.name == 'Bonemerang' or move.name == 'Double Kick':
                 damage *= 2
                 BattleWindow.description_battle = move.name + ' hits 2 times.'
                 show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
+            hp_lost = defender_model.team[0].loseHP(damage)
         # if the move is "Special", the damage formula will take into account special attack and special defense.
         elif move.kind == "Special":
-            damage = int((((2 * attacker.team[0].level) + 10) / 250 * (
-                    attacker.team[0].battleSpATK / defender.team[0].battleSpDEF) * move.power + 2) * modifier)
-            hp_lost = defender.team[0].loseHP(damage)
+            damage = int((((2 * attacker_model.team[0].level) + 10) / 250 * (
+                    attacker_model.team[0].battleSpATK / defender_model.team[0].battleSpDEF) * move.power + 2) * modifier)
+            hp_lost = defender_model.team[0].loseHP(damage)
             if move.name == 'Giga Drain':
                 gain_hp = abs(hp_lost) // 2
-                gain_hp = attacker.team[0].gainHP(gain_hp)
+                gain_hp = attacker_model.team[0].gainHP(gain_hp)
         # stat changing moves.
         else:
             # if the move is stat-changing, it does 0 damage and the modifier is set to 1 (so it doesn't return the effectiveness).
             hp_lost = 0
             # check the stat-changing move type.
             if move.kind == "a+":
-                attacker.team[0].atkStage += 1
-                attacker.team[0].battleATK = attacker.team[0].originalATK * utils.statMod(attacker.team[0].atkStage)
-                BattleWindow.description_battle = attacker.team[0].name + '\'s attack rose!'
+                attacker_model.team[0].atkStage += 1
+                attacker_model.team[0].battleATK = attacker_model.team[0].originalATK * utils.statMod(attacker_model.team[0].atkStage)
+                BattleWindow.description_battle = attacker_model.team[0].name + '\'s attack rose!'
 
             elif move.kind == "d+":
-                attacker.team[0].defStage += 1
-                attacker.team[0].battleDEF = attacker.team[0].originalDEF * utils.statMod(attacker.team[0].defStage)
-                BattleWindow.description_battle = attacker.team[0].name + '\'s defense rose!'
+                attacker_model.team[0].defStage += 1
+                attacker_model.team[0].battleDEF = attacker_model.team[0].originalDEF * utils.statMod(attacker_model.team[0].defStage)
+                BattleWindow.description_battle = attacker_model.team[0].name + '\'s defense rose!'
 
             elif move.kind == "sa+":
-                attacker.team[0].spAtkStage += 1
-                attacker.team[0].battleSpATK = attacker.team[0].originalSpATK * utils.statMod(
-                    attacker.team[0].spAtkStage)
-                BattleWindow.description_battle = attacker.team[0].name + '\'s special attack rose!'
+                attacker_model.team[0].spAtkStage += 1
+                attacker_model.team[0].battleSpATK = attacker_model.team[0].originalSpATK * utils.statMod(
+                    attacker_model.team[0].spAtkStage)
+                BattleWindow.description_battle = attacker_model.team[0].name + '\'s special attack rose!'
 
             elif move.kind == "sd+":
-                attacker.team[0].spDefStage += 1
-                attacker.team[0].battleSpDef = attacker.team[0].originalSpDEF * utils.statMod(
-                    attacker.team[0].spDefStage)
-                BattleWindow.description_battle = attacker.team[0].name + '\'s special defense rose!'
+                attacker_model.team[0].spDefStage += 1
+                attacker_model.team[0].battleSpDef = attacker_model.team[0].originalSpDEF * utils.statMod(
+                    attacker_model.team[0].spDefStage)
+                BattleWindow.description_battle = attacker_model.team[0].name + '\'s special defense rose!'
 
             elif move.kind == "s+":
-                attacker.team[0].speedStage += 1
-                attacker.team[0].battleSpeed = attacker.team[0].originalSpeed * utils.statMod(
-                    attacker.team[0].speedStage)
-                BattleWindow.description_battle = attacker.team[0].name + '\'s speed rose!'
+                attacker_model.team[0].speedStage += 1
+                attacker_model.team[0].battleSpeed = attacker_model.team[0].originalSpeed * utils.statMod(
+                    attacker_model.team[0].speedStage)
+                BattleWindow.description_battle = attacker_model.team[0].name + '\'s speed rose!'
 
             elif move.kind == "a+sa+":
-                attacker.team[0].atkStage += 1
-                attacker.team[0].spAtkStage += 1
-                attacker.team[0].battleATK = attacker.team[0].originalATK * utils.statMod(attacker.team[0].atkStage)
-                attacker.team[0].battleSpATK = attacker.team[0].originalSpATK * utils.statMod(
-                    attacker.team[0].spAtkStage)
-                BattleWindow.description_battle = attacker.team[0].name + '\'s attack and special attack rose!'
+                attacker_model.team[0].atkStage += 1
+                attacker_model.team[0].spAtkStage += 1
+                attacker_model.team[0].battleATK = attacker_model.team[0].originalATK * utils.statMod(attacker_model.team[0].atkStage)
+                attacker_model.team[0].battleSpATK = attacker_model.team[0].originalSpATK * utils.statMod(
+                    attacker_model.team[0].spAtkStage)
+                BattleWindow.description_battle = attacker_model.team[0].name + '\'s attack and special attack rose!'
 
             elif move.kind == "a-":
-                defender.team[0].atkStage -= 1
-                defender.team[0].battleATK = defender.team[0].originalATK * utils.statMod(defender.team[0].atkStage)
-                BattleWindow.description_battle = defender.team[0].name + ' attacks fell!'
+                defender_model.team[0].atkStage -= 1
+                defender_model.team[0].battleATK = defender_model.team[0].originalATK * utils.statMod(defender_model.team[0].atkStage)
+                BattleWindow.description_battle = defender_model.team[0].name + ' attacks fell!'
 
             elif move.kind == "d-":
-                defender.team[0].defStage -= 1
-                defender.team[0].battleDEF = defender.team[0].originalDEF * utils.statMod(defender.team[0].defStage)
-                BattleWindow.description_battle = defender.team[0].name + '\'s defense fell!'
+                defender_model.team[0].defStage -= 1
+                defender_model.team[0].battleDEF = defender_model.team[0].originalDEF * utils.statMod(defender_model.team[0].defStage)
+                BattleWindow.description_battle = defender_model.team[0].name + '\'s defense fell!'
 
             elif move.kind == "sa-":
-                defender.team[0].spAtkStage -= 1
-                defender.team[0].battleSpATK = defender.team[0].originalSpATK * utils.statMod(
-                    defender.team[0].spAtkStage)
-                BattleWindow.description_battle = defender.team[0].name + '\'s special attack fell!'
+                defender_model.team[0].spAtkStage -= 1
+                defender_model.team[0].battleSpATK = defender_model.team[0].originalSpATK * utils.statMod(
+                    defender_model.team[0].spAtkStage)
+                BattleWindow.description_battle = defender_model.team[0].name + '\'s special attack fell!'
 
             elif move.kind == "sd-":
-                defender.team[0].spDefStage -= 1
-                defender.team[0].battleSpDEF = defender.team[0].originalSpDEF * utils.statMod(
-                    defender.team[0].spDefStage)
-                BattleWindow.description_battle = defender.team[0].name + '\'s special defense fell!'
+                defender_model.team[0].spDefStage -= 1
+                defender_model.team[0].battleSpDEF = defender_model.team[0].originalSpDEF * utils.statMod(
+                    defender_model.team[0].spDefStage)
+                BattleWindow.description_battle = defender_model.team[0].name + '\'s special defense fell!'
 
             elif move.kind == "s-":
-                defender.team[0].speedStage -= 1
-                defender.team[0].battleSpeed = defender.team[0].originalSpeed * utils.statMod(
-                    defender.team[0].speedStage)
-                BattleWindow.description_battle = defender.team[0].name + '\'s speed fell!'
+                defender_model.team[0].speedStage -= 1
+                defender_model.team[0].battleSpeed = defender_model.team[0].originalSpeed * utils.statMod(
+                    defender_model.team[0].speedStage)
+                BattleWindow.description_battle = defender_model.team[0].name + '\'s speed fell!'
 
             if move.name == 'Synthesis' or move.name == 'Moonlight':
-                gain_hp = attacker.team[0].battleHP // 2
-                gain_hp = attacker.team[0].gainHP(gain_hp)
-                BattleWindow.description_battle = attacker.team[0].name + ' gained ' + str(abs(gain_hp)) + ' HP.'
+                gain_hp = attacker_model.team[0].battleHP // 2
+                gain_hp = attacker_model.team[0].gainHP(gain_hp)
+                BattleWindow.description_battle = attacker_model.team[0].name + ' gained ' + str(abs(gain_hp)) + ' HP.'
 
         # if the attack does damage to defender then the reduce_hp_bar animation is shown.
         if (move.kind == "Physical" or move.kind == 'Special') and hp_lost != 0:
             show_screen_elements.reduce_hp_bar(BattleWindow, False, False, player_attacker, hp_lost)
             if move.name == 'Giga Drain':
-                BattleWindow.description_battle = attacker.team[0].name + ' gained ' + str(abs(gain_hp)) + ' HP and ' + \
-                                                  defender.team[0].name + ' lost ' + str(abs(hp_lost)) + ' HP.'
+                BattleWindow.description_battle = attacker_model.team[0].name + ' gained ' + str(abs(gain_hp)) + ' HP and ' + \
+                                                  defender_model.team[0].name + ' lost ' + str(abs(hp_lost)) + ' HP.'
             else:
-                BattleWindow.description_battle = defender.team[0].name + ' lost ' + str(abs(hp_lost)) + ' HP.'
+                BattleWindow.description_battle = defender_model.team[0].name + ' lost ' + str(abs(hp_lost)) + ' HP.'
             show_screen_elements.wait(BattleWindow, 20, False, False)
         else:
             show_screen_elements.wait(BattleWindow, 30, False, False)
 
         # check for "Selfdestruct" move.
         if move.name == 'Selfdestruct':
-            attacker.team[0].battleHP_actual = 0
+            attacker_model.team[0].battleHP_actual = 0
             show_screen_elements.wait(BattleWindow, 15, False, False)
         move.pp_remain -= 1
         # check if attacker/defender Pokemon are fainted.
-        if defender.team[0].battleHP_actual == 0:
-            pokemon_fainted(BattleWindow, player_attacker, defender.team[0])
+        if defender_model.team[0].battleHP_actual == 0:
+            pokemon_fainted(BattleWindow, player_attacker, defender_model.team[0])
             defender_fainted = True
-        if attacker.team[0].battleHP_actual == 0:
-            pokemon_fainted(BattleWindow, not player_attacker, attacker.team[0])
+        if attacker_model.team[0].battleHP_actual == 0:
+            pokemon_fainted(BattleWindow, not player_attacker, attacker_model.team[0])
             attacker_fainted = True
     return attacker_fainted, defender_fainted, count_move_attacker
 
@@ -446,7 +446,7 @@ def pokemon_fainted(BattleWindow, player_me_attacker, pokemon):
             BattleWindow.pokemon_enemy_fainted = True
         else:
             # player me win.
-            BattleWindow.description_battle = 'YOU WIN.'
+            BattleWindow.description_battle = 'YOU WIN'
             show_screen_elements.wait(BattleWindow, 30, False, False)
             BattleWindow.exit_battle = True
     else:
@@ -459,6 +459,6 @@ def pokemon_fainted(BattleWindow, player_me_attacker, pokemon):
             BattleWindow.pokemon_me_fainted = True
         else:
             # player me loses.
-            BattleWindow.description_battle = 'YOU LOSE.'
+            BattleWindow.description_battle = 'YOU LOSE'
             show_screen_elements.wait(BattleWindow, 30, False, False)
             BattleWindow.exit_battle = True

@@ -288,11 +288,11 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
         if move.kind == "Physical":
             damage = int((((2 * attacker_model.team[0].level) + 10) / 250 * (
                     attacker_model.team[0].battleATK / defender_model.team[0].battleDEF) * move.power + 2) * modifier)
-            hp_lost = defender_model.team[0].loseHP(damage)
             if move.name == 'Bonemerang' or move.name == 'Double Kick':
                 damage *= 2
                 BattleWindow.description_battle = move.name + ' hits 2 times.'
                 show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
+            hp_lost = defender_model.team[0].loseHP(damage)
         # if the move is "Special", the damage formula will take into account special attack and special defense.
         elif move.kind == "Special":
             damage = int((((2 * attacker_model.team[0].level) + 10) / 250 * (
@@ -434,7 +434,7 @@ def pokemon_fainted(BattleWindow, player_me_attacker, pokemon):
             BattleWindow.pokemon_enemy_visible = True
         else:
             # player me win.
-            BattleWindow.description_battle = 'YOU WIN.'
+            BattleWindow.description_battle = 'YOU WIN'
             show_screen_elements.wait(BattleWindow, 30, False, False)
             BattleWindow.exit_battle = True
     else:
@@ -446,6 +446,6 @@ def pokemon_fainted(BattleWindow, player_me_attacker, pokemon):
             BattleWindow.change_pokemon_menu = True
         else:
             # player me loses.
-            BattleWindow.description_battle = 'YOU LOSE.'
+            BattleWindow.description_battle = 'YOU LOSE'
             show_screen_elements.wait(BattleWindow, 30, False, False)
             BattleWindow.exit_battle = True

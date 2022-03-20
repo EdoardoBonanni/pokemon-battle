@@ -11,9 +11,14 @@ def draw_battle_description(BattleWindow, text):
     :param text: battle description text.
     :return:
     """
-    BattleWindow.battle_description = pygame.font.Font("fonts/VT323-Regular.ttf", 30).render(text, False, (0, 0, 0))
-    BattleWindow.screen.blit(BattleWindow.battle_description,
-                             (BattleWindow.screen_width * 0.04, BattleWindow.screen_height * 0.825))
+    if text != 'YOU WIN' and text != 'YOU LOSE':
+        BattleWindow.battle_description = pygame.font.Font("fonts/VT323-Regular.ttf", 30).render(text, False, (0, 0, 0))
+        BattleWindow.screen.blit(BattleWindow.battle_description,
+                                 (BattleWindow.screen_width * 0.04, BattleWindow.screen_height * 0.825))
+    else:
+        BattleWindow.battle_description = pygame.font.Font("fonts/VT323-Regular.ttf", 85).render(text, False, (0, 0, 0))
+        BattleWindow.screen.blit(BattleWindow.battle_description,
+                                 (BattleWindow.screen_width * 0.43, BattleWindow.screen_height * 0.84))
 
 
 def draw_button_moves(BattleWindow):
@@ -477,7 +482,6 @@ def exit_battle_operations(BattleWindow):
     BattleWindow.model.enemy.team = []
     BattleWindow.model.enemy.name = ''
     BattleWindow.run = False
-    BattleWindow
 
 
 def basic_events(BattleWindow):
