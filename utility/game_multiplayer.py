@@ -232,6 +232,7 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
     attacker_fainted = False
     defender_fainted = False
     always_miss_attack = False
+    gain_hp = 0
     # check if defender uses a special move.
     if special_moves_defender:
         # if defender uses fly or dig and the attacker doesn't use earthquake, then the attacker's move always misses.
@@ -306,12 +307,12 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
             show_screen_elements.wait(BattleWindow, 30, False, False)
 
         # check if attack does a critical hit.
-        if critic_value > 0.98 and (move.kind == "Physical" or move.kind == "Special"):
+        if critic_value > 0.98 and (move.kind == "Physical" or move.kind == "Special") and effectiveness != 'not effect':
             BattleWindow.description_battle = 'A critical hit!'
             show_screen_elements.wait(BattleWindow, 30, False, False)
 
         # if the move is "Physical", the damage formula will take into account attack and defense.
-        if move.kind == "Physical":
+        if move.kind == "Physical" and effectiveness != 'not effect':
             damage = int((((2 * attacker_model.team[0].level) + 10) / 250 * (
                     attacker_model.team[0].battleATK / defender_model.team[0].battleDEF) * move.power + 2) * modifier)
             if move.name == 'Bonemerang' or move.name == 'Double Kick':
@@ -320,7 +321,7 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
                 show_screen_elements.explosion_animations(BattleWindow, False, False, not player_attacker)
             hp_lost = defender_model.team[0].loseHP(damage)
         # if the move is "Special", the damage formula will take into account special attack and special defense.
-        elif move.kind == "Special":
+        elif move.kind == "Special" and effectiveness != 'not effect':
             damage = int((((2 * attacker_model.team[0].level) + 10) / 250 * (
                     attacker_model.team[0].battleSpATK / defender_model.team[0].battleSpDEF) * move.power + 2) * modifier)
             hp_lost = defender_model.team[0].loseHP(damage)
@@ -328,7 +329,7 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
                 gain_hp = abs(hp_lost) // 2
                 gain_hp = attacker_model.team[0].gainHP(gain_hp)
         # stat changing moves.
-        else:
+        elif move.kind != "Physical" and move.kind != "Special":
             # if the move is stat-changing, it does 0 damage and the modifier is set to 1 (so it doesn't return the effectiveness).
             hp_lost = 0
             # check the stat-changing move type.
@@ -400,7 +401,8 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
                 gain_hp = attacker_model.team[0].battleHP // 2
                 gain_hp = attacker_model.team[0].gainHP(gain_hp)
                 BattleWindow.description_battle = attacker_model.team[0].name + ' gained ' + str(abs(gain_hp)) + ' HP.'
-
+        else:
+            hp_lost = 0
         # if the attack does damage to defender then the reduce_hp_bar animation is shown.
         if (move.kind == "Physical" or move.kind == 'Special') and hp_lost != 0:
             show_screen_elements.reduce_hp_bar(BattleWindow, False, False, player_attacker, hp_lost)

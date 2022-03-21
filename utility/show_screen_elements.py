@@ -18,7 +18,7 @@ def draw_battle_description(BattleWindow, text):
     else:
         BattleWindow.battle_description = pygame.font.Font("fonts/VT323-Regular.ttf", 85).render(text, False, (0, 0, 0))
         BattleWindow.screen.blit(BattleWindow.battle_description,
-                                 (BattleWindow.screen_width * 0.41, BattleWindow.screen_height * 0.84))
+                                 (BattleWindow.screen_width * 0.4, BattleWindow.screen_height * 0.84))
 
 
 def draw_button_moves(BattleWindow):
@@ -75,7 +75,7 @@ def draw_pokemon(BattleWindow, pokemon_me, pokemon_enemy, show_type_img):
         BattleWindow.move_down_back = ['bulbasaur', 'ivysaur', 'charmander', 'squirtle', 'caterpie', 'metapod',
                                        'kakuna',
                                        'weedle', 'starly', 'pidgey', 'rattata', 'spearow', 'ekans', 'pikachu',
-                                       'sandshrew', 'sandslash', 'nidoran', 'nidorina', 'clefairy', 'vulpix',
+                                       'sandshrew', 'sandslash', 'nidoran m', 'nidorina', 'clefairy', 'vulpix',
                                        'jigglypuff',
                                        'oddish', 'gloom', 'paras', 'venonat',
                                        'diglett', 'dugtrio', 'meowth', 'psyduck', 'mankey', 'growlithe', 'poliwag',
@@ -97,6 +97,9 @@ def draw_pokemon(BattleWindow, pokemon_me, pokemon_enemy, show_type_img):
         elif pokemon_me.name.lower() in BattleWindow.move_down_back:
             BattleWindow.screen.blit(pokemon_me_image,
                                      (BattleWindow.screen_width * 0.04, BattleWindow.screen_height * 0.39))
+        elif pokemon_me.name.lower() == 'nidoran f':
+            BattleWindow.screen.blit(pokemon_me_image,
+                                     (BattleWindow.screen_width * 0.1, BattleWindow.screen_height * 0.45))
         else:
             BattleWindow.screen.blit(pokemon_me_image,
                                      (BattleWindow.screen_width * 0.04, BattleWindow.screen_height * 0.33))
@@ -150,7 +153,7 @@ def draw_pokemon(BattleWindow, pokemon_me, pokemon_enemy, show_type_img):
     if len(BattleWindow.move_down) == 0:
         BattleWindow.move_down = ['rattata', 'bulbasaur', 'sandshrew', 'paras', 'diglett', 'ditto', 'omanyte',
                                   'porygon',
-                                  'nidoran', 'spearow', 'jigglypuff', 'paras', 'growlithe', 'abra', 'grimer',
+                                  'nidoran m', 'spearow', 'jigglypuff', 'paras', 'growlithe', 'abra', 'grimer',
                                   'krabby', 'exeggcute', 'cubone', 'kabuto']
     if BattleWindow.pokemon_enemy_visible:
         pokemon_enemy_image = pygame.image.load(
@@ -163,6 +166,9 @@ def draw_pokemon(BattleWindow, pokemon_me, pokemon_enemy, show_type_img):
         elif pokemon_enemy.name.lower() in BattleWindow.move_down:
             BattleWindow.screen.blit(pokemon_enemy_image,
                                      (BattleWindow.screen_width * 0.73, BattleWindow.screen_height * 0.065))
+        elif pokemon_enemy.name.lower() in 'nidoran f':
+            BattleWindow.screen.blit(pokemon_enemy_image,
+                                     (BattleWindow.screen_width * 0.76, BattleWindow.screen_height * 0.12))
         else:
             BattleWindow.screen.blit(pokemon_enemy_image,
                                      (BattleWindow.screen_width * 0.73, BattleWindow.screen_height * 0.045))
@@ -633,7 +639,7 @@ def explosion_animations(BattleWindow, show_button, show_type_img, animation_pok
         BattleWindow.update_battle_window(show_button, show_type_img)
         draw_hp(BattleWindow, BattleWindow.model.me.team[0].battleHP_actual,
                                        BattleWindow.model.enemy.team[0].battleHP_actual)
-        pygame.mixer.Channel(1).set_volume(0.1)
+        pygame.mixer.Channel(1).set_volume(0.05)
         pygame.mixer.Channel(1).play(pygame.mixer.Sound('sounds/explosion.wav'))
         if animation_pokemon_me:
             explosion = pygame.transform.scale(BattleWindow.explosion_sheet[k], (
