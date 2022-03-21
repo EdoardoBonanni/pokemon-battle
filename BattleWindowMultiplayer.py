@@ -29,7 +29,7 @@ class BattleWindowMultiplayer:
         icon = pygame.image.load('img/logo.png')
         pygame.display.set_icon(icon)
         pygame.mixer.init()
-        pygame.mixer.Channel(0).set_volume(0.1)
+        pygame.mixer.Channel(0).set_volume(0.05)
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/battle_soundtrack.mp3'), -1)
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))  # PyGame screen display.
         self.manager = pygame_gui.UIManager((self.screen_width, self.screen_height),
@@ -291,9 +291,12 @@ class BattleWindowMultiplayer:
 
             message = self.keep_connection()
             show_screen_elements.basic_events(self)
-
+            if self.enemy_lost_connection:
+                self.exit_battle = True
             if self.exit_battle:
                 show_screen_elements.exit_battle_operations(self)
+                self.description_battle = 'Connection lost with enemy, return to game mode selection.'
+                self.connection_lost_waiting(100)
                 break
 
             if message:
@@ -340,9 +343,12 @@ class BattleWindowMultiplayer:
 
             message = self.keep_connection()
             show_screen_elements.basic_events(self)
-
+            if self.enemy_lost_connection:
+                self.exit_battle = True
             if self.exit_battle:
                 show_screen_elements.exit_battle_operations(self)
+                self.description_battle = 'Connection lost with enemy, return to game mode selection.'
+                self.connection_lost_waiting(100)
                 break
 
             if message:
@@ -402,9 +408,12 @@ class BattleWindowMultiplayer:
 
             message = self.keep_connection()
             show_screen_elements.basic_events(self)
-
+            if self.enemy_lost_connection:
+                self.exit_battle = True
             if self.exit_battle:
                 show_screen_elements.exit_battle_operations(self)
+                self.description_battle = 'Connection lost with enemy, return to game mode selection.'
+                self.connection_lost_waiting(100)
                 break
 
             if message:
@@ -472,9 +481,12 @@ class BattleWindowMultiplayer:
 
             message = self.keep_connection()
             show_screen_elements.basic_events(self)
-
+            if self.enemy_lost_connection:
+                self.exit_battle = True
             if self.exit_battle:
                 show_screen_elements.exit_battle_operations(self)
+                self.description_battle = 'Connection lost with enemy, return to game mode selection.'
+                self.connection_lost_waiting(100)
                 break
 
             if message:
@@ -600,7 +612,7 @@ class BattleWindowMultiplayer:
         :return:
         """
         prob_accuracy = random.random() * 100
-        critic_value = random.uniform(0.85, 1.0)
+        critic_value = random.uniform(0.80, 1.0)
         self.find_enemy_move(True, move_me, prob_accuracy, critic_value, None, None)
         if self.move_enemy_found and self.enemy_move_data:
             self.read_data_moves()

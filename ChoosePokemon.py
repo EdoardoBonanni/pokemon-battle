@@ -161,6 +161,9 @@ class ChoosePokemon(QMainWindow):
         item = deepcopy(self.model.pokedex.listPokemon[item_name])
         if self.model.me.remove(item):
             self.update_team()
+        elif len(self.model.me.team) > 0:
+            if self.model.me.remove(self.model.me.team[-1]):
+                self.update_team()
 
     def update_team(self):
         """
@@ -220,7 +223,7 @@ class ChoosePokemon(QMainWindow):
         Start the battle if the team is full, else warning message.
         :return:
         """
-        # self.choose_random_pokemon()
+        self.choose_random_pokemon()
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Charizard']))
@@ -235,7 +238,7 @@ class ChoosePokemon(QMainWindow):
             msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle('Warning')
             msg_box.setWindowIcon(QtGui.QIcon('img/exclamation.png'))
-            msg_box.setText("You have to choose 6 pokemon for the battle.")
+            msg_box.setText("You have to choose 6 Pokemon for the battle.")
             msg_box.exec_()
 
 
