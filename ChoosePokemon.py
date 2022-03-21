@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 import random
 from UI.ChoosePokemonUI import Ui_MainWindow
@@ -69,6 +69,12 @@ class ChoosePokemon(QMainWindow):
         self.ui.label_5.mouseDoubleClickEvent = partial(self.swap_pokemon, 5)
         self.ui.label_6.mouseDoubleClickEvent = partial(self.swap_pokemon, 6)
 
+    def keyPressEvent(self, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            self.view_pokemon()
+        else:
+            super().keyPressEvent(event)
+
     def swap_pokemon(self, index, event):
         """
         Allow swapping Pokemon from the team to the new one that is selected from the list.
@@ -105,7 +111,10 @@ class ChoosePokemon(QMainWindow):
         :return:
         """
         self.ui.tableWidget.item(0, 1).setText(pokemon_item.name)
-        self.ui.tableWidget.item(1, 1).setText(str(pokemon_item.type1) + " " + str(pokemon_item.type2))
+        if pokemon_item.type2 != '':
+            self.ui.tableWidget.item(1, 1).setText(str(pokemon_item.type1) + ", " + str(pokemon_item.type2))
+        else:
+            self.ui.tableWidget.item(1, 1).setText(str(pokemon_item.type1))
         self.ui.tableWidget.item(2, 1).setText(str(pokemon_item.move1.name) + ", " + str(pokemon_item.move2.name) + ", " + str(pokemon_item.move3.name) + ", " + str(pokemon_item.move4.name))
         self.ui.tableWidget.item(3, 1).setText(str(int(pokemon_item.battleHP)))
         self.ui.tableWidget.item(4, 1).setText(str(int(pokemon_item.battleATK)))
@@ -114,6 +123,7 @@ class ChoosePokemon(QMainWindow):
         self.ui.tableWidget.item(7, 1).setText(str(int(pokemon_item.battleSpDEF)))
         self.ui.tableWidget.item(8, 1).setText(str(int(pokemon_item.battleSpeed)))
         self.ui.tableWidget.item(9, 1).setText(str(int(pokemon_item.battleTotal)))
+        self.ui.tableWidget.resizeColumnsToContents()
 
         self.ui.pokemon_img.setPixmap(QtGui.QPixmap('img_pokemon_png/' + pokemon_item.name.lower() + '.png'))  # Set pokemon_img pixmap.
 
