@@ -35,7 +35,7 @@ class Ui_widget_item(object):
         self.label_name.setSizePolicy(sizePolicy)
         self.label_name.setScaledContents(False)
         font = QtGui.QFont()
-        font.setPointSize(15)
+        font.setPointSize(14)
         self.label_name.setFont(font)
         self.label_name.setObjectName("label_name")
         self.horizontalLayout_2.addWidget(self.label_name)

@@ -46,7 +46,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pokemon_img.sizePolicy().hasHeightForWidth())
         self.pokemon_img.setSizePolicy(sizePolicy)
         self.pokemon_img.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self.pokemon_img.setAcceptDrops(True)
+        self.pokemon_img.setAcceptDrops(False)
         self.pokemon_img.setAutoFillBackground(False)
         self.pokemon_img.setText("")
         self.pokemon_img.setScaledContents(False)
