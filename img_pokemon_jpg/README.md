@@ -1,3 +1,0 @@
-# Pokemon images jpg
-
-
