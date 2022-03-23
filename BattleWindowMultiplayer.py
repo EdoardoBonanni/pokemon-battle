@@ -25,13 +25,13 @@ class BattleWindowMultiplayer:
         """
         pygame.init()
 
-        pygame.display.set_caption('Pokemon Battle')
+        pygame.display.set_caption('Pokémon Battle Simulator')
         icon = pygame.image.load('img/logo.png')
         pygame.display.set_icon(icon)
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))  # PyGame screen display.
         pygame.mixer.init()
         pygame.mixer.Channel(0).set_volume(0.05)
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/battle_soundtrack.mp3'), -1)
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))  # PyGame screen display.
         self.manager = pygame_gui.UIManager((self.screen_width, self.screen_height),
                                             'themes/button_theming_test_theme.json')  # PyGame gui manager.
         self.font_name = pygame.font.Font("fonts/VT323-Regular.ttf", 60)
