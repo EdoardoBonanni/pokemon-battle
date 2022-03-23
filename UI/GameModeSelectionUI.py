@@ -5,7 +5,7 @@ class Ui_MainWindow(object):
     # UI used for select the game mode to start a battle.
     def setupUi(self, MainWindow, x, y):
         # GameModeSelection MainWindow and its properties.
-        MainWindow.setObjectName("StartGame")
+        MainWindow.setObjectName("Pokémon Battle Simulator")
         MainWindow.resize(1300, 910)
         MainWindow.setMinimumSize(1300, 910)
         MainWindow.setMaximumSize(1300, 910)
@@ -68,7 +68,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.singleplayer.setFont(font)
-        self.singleplayer.setStyleSheet("border-image: None; background-color: #0052cc;")
+        self.singleplayer.setStyleSheet("border-image: None; background-color: #0052cc; color:#ffffff;")
         self.singleplayer.setObjectName("singleplayer")
         self.verticalLayout.addWidget(self.singleplayer, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self.multiplayer = QtWidgets.QPushButton(self.centralwidget)
@@ -85,7 +85,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.multiplayer.setFont(font)
-        self.multiplayer.setStyleSheet("border-image: None; background-color: #2eb82e;")
+        self.multiplayer.setStyleSheet("border-image: None; background-color: #2eb82e; color:#ffffff;")
         self.multiplayer.setObjectName("multiplayer")
         self.verticalLayout.addWidget(self.multiplayer, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
 
@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.exit.setFont(font)
-        self.exit.setStyleSheet("border-image: None; background-color: #991f00;")
+        self.exit.setStyleSheet("border-image: None; background-color: #991f00; color:#ffffff;")
         self.exit.setObjectName("exit")
         self.verticalLayout.addWidget(self.exit, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -116,7 +116,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Select a game mode"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Pokémon Battle Simulator"))
         self.title.setText(_translate("MainWindow", "Select a nickname to start the game"))
         self.singleplayer.setText(_translate("MainWindow", "Single-Player"))
         self.multiplayer.setText(_translate("MainWindow", "Multi-Player"))
