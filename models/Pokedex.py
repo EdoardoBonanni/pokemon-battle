@@ -1,4 +1,4 @@
-from utility.utils import readCSVMoves, readCSVPokemon, read_type_advantages
+from utility.utils import readCSV_moves, readCSV_Pokemon, read_type_advantages
 
 
 class Pokedex:
@@ -7,6 +7,6 @@ class Pokedex:
     """
 
     def __init__(self):
-        self.listMoves = readCSVMoves("csv/Pokemon Moves.csv")  # List of all moves.
-        self.listPokemon = readCSVPokemon(self.listMoves, "csv/Kanto Pokemon Spreadsheet.csv")  # List of all Pokemon.
+        self.listMoves = readCSV_moves("csv/Pokemon Moves.csv")  # List of all moves.
+        self.listPokemon = readCSV_Pokemon(self.listMoves, "csv/Kanto Pokemon Spreadsheet.csv")  # List of all Pokemon.
         self.type_advantages = read_type_advantages("csv/Type Advantages.csv")  # Type Advantages for check effectiveness of moves on Pokemon.
