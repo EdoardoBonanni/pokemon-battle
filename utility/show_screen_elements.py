@@ -287,7 +287,7 @@ def draw_team_choice_menu(BattleWindow):
         BattleWindow, BattleWindow.model.me.team[5].name, font_name, BattleWindow.model.me.team[5].battleHP_actual,
         BattleWindow.model.me.team[5].battleHP)
 
-    text_description = pygame.font.Font("fonts/VT323-Regular.ttf", 80).render('Choose a Pokemon.', False, (0, 0, 0))
+    text_description = pygame.font.Font("fonts/VT323-Regular.ttf", 80).render('Choose a Pokémon.', False, (0, 0, 0))
     text_exit = pygame.font.Font("fonts/VT323-Regular.ttf", 50).render('Exit', False, (255, 255, 255))
     BattleWindow.rect_pokemon_list_menu_active = move_rect(pokemon_list_menu_active,
                                                            -BattleWindow.screen_width * 0.02,
@@ -364,7 +364,7 @@ def draw_team_choice_menu(BattleWindow):
                              (BattleWindow.screen_width * 0.84, BattleWindow.screen_height * 0.75))
     BattleWindow.screen.blit(draw_hp_number_total5,
                              (BattleWindow.screen_width * 0.92, BattleWindow.screen_height * 0.75))
-    BattleWindow.screen.blit(text_description, (BattleWindow.screen_width * 0.05, BattleWindow.screen_height * 0.87))
+    BattleWindow.screen.blit(text_description, (BattleWindow.screen_width * 0.05, BattleWindow.screen_height * 0.86))
     BattleWindow.screen.blit(text_exit, (BattleWindow.screen_width * 0.855, BattleWindow.screen_height * 0.875))
 
 
