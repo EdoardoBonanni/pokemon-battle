@@ -15,8 +15,14 @@ The other modules requested are already available if you use Python 3.8.
 
 ## Usage
 If you want to play singleplayer mode just launch **main.py** with python (if you have a virtual environment, remember to activate it) and select the singleplayer modality.
-Instead, if you choose the multiplayer mode, you need to run the server (**Server.py**) and 2 instances of the game. 
-
+```
+python main.py
+```
+Instead, if you choose the multiplayer mode, you need to run the server (**Server.py**).
+```
+python connection/Server.py
+```
+After that, two instances of the game must be run two times by launching **main.py**.
 ## GUI
 The application is divided into vary main screens.
 * **ChoosePokemon** that is the first main screen of the application and allows the user to select all Pokémon for the team. 
