@@ -29,9 +29,9 @@ class BattleWindowMultiplayer:
         icon = pygame.image.load('img/logo.png')
         pygame.display.set_icon(icon)
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))  # PyGame screen display.
-        pygame.mixer.init()
-        pygame.mixer.Channel(0).set_volume(0.05)
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/battle_soundtrack.mp3'), -1)
+        # pygame.mixer.init()
+        # pygame.mixer.Channel(0).set_volume(0.05)
+        # pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/battle_soundtrack.mp3'), -1)
         self.manager = pygame_gui.UIManager((self.screen_width, self.screen_height),
                                             'themes/button_theming_test_theme.json')  # PyGame gui manager.
         self.font_name = pygame.font.Font("fonts/VT323-Regular.ttf", 60)
@@ -57,6 +57,11 @@ class BattleWindowMultiplayer:
         else:
             self.player = None
         self.btn_quit = None
+        self.btn_change_pokemon = None
+        self.btn_move1 = None
+        self.btn_move2 = None
+        self.btn_move3 = None
+        self.btn_move4 = None
 
     def draw_bg(self):
         """
@@ -227,6 +232,9 @@ class BattleWindowMultiplayer:
         new_pokemon_active = None
 
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.exit_battle = True
+                self.run = False
             if self.rect_pokemon_list_menu_active.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[0].battleHP_actual > 0:
@@ -275,6 +283,9 @@ class BattleWindowMultiplayer:
                 if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP:
                     if self.model.me.team[0].battleHP_actual > 0:
                         self.change_pokemon_menu = False
+        if self.exit_battle:
+            show_screen_elements.exit_battle_operations(self)
+            pygame.quit()
         self.description_battle = 'What will ' + self.model.me.team[0].name + ' do?'
         return pokemon_changed, pokemon_withdrawn, new_pokemon_active
 
@@ -295,8 +306,6 @@ class BattleWindowMultiplayer:
                 self.exit_battle = True
             if self.exit_battle:
                 show_screen_elements.exit_battle_operations(self)
-                self.description_battle = 'Connection lost with enemy, return to game mode selection.'
-                self.connection_lost_waiting(100)
                 break
 
             if message:
@@ -584,8 +593,6 @@ class BattleWindowMultiplayer:
                 self.critic_value[1] = float(self.enemy_move_data['critic_value'])
         else:
             if self.enemy_move_data['type'] == 'change_pokemon':
-                # todo check if exist.
-                pokemon_withdrawn_str = str(self.enemy_move_data['pokemon_withdrawn'])
                 new_pokemon_active_str = str(self.enemy_move_data['new_pokemon_active'])
                 self.switch_enemy_pokemon(new_pokemon_active_str)
 
