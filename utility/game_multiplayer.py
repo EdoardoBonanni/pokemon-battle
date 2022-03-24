@@ -248,6 +248,10 @@ def attack(BattleWindow, attacker_model, defender_model, move, player_attacker, 
         always_miss_attack = False
     else:
         move_accuracy = int(move.accuracy.replace('%', ''))
+    if prob_accuracy is None:
+        prob_accuracy = 100
+    if critic_value is None:
+        critic_value = 0.80
     if prob_accuracy > move_accuracy or always_miss_attack:
         count_move_attacker = 0
         BattleWindow.description_battle = attacker_model.team[0].name + ' used ' + move.name + ' but missed attack!'

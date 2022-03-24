@@ -498,6 +498,7 @@ def basic_events(BattleWindow):
     """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            BattleWindow.exit_battle = True
             BattleWindow.run = False
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element.most_specific_combined_id == BattleWindow.btn_quit.most_specific_combined_id:
