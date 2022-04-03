@@ -1,3 +1,4 @@
+import pygame
 from utility import utils, show_screen_elements
 
 
@@ -453,6 +454,7 @@ def pokemon_fainted(BattleWindow, player_me_attacker, pokemon):
         else:
             # player me win.
             BattleWindow.description_battle = 'YOU WIN'
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/winner_sound.mp3'))
             show_screen_elements.wait(BattleWindow, 30, False, False)
             BattleWindow.exit_battle = True
     else:
@@ -466,5 +468,6 @@ def pokemon_fainted(BattleWindow, player_me_attacker, pokemon):
         else:
             # player me loses.
             BattleWindow.description_battle = 'YOU LOSE'
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/loser_sound.mp3'))
             show_screen_elements.wait(BattleWindow, 30, False, False)
             BattleWindow.exit_battle = True
