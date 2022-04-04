@@ -1,6 +1,6 @@
 # Pokemon Battle Simulator
-This application aims to simulate the real Pokémon gameplay with an implementation based on PyGame.
-The game allows to select Pokémon team and play a battle vs CPU in singleplayer mode or vs an other trainer in multiplayer mode.
+Pokémon Battle Simulator is a game that aims to simulate the real Pokémon battle games with an implementation based on PyGame. 
+In the application are implemented all features and functionalities that allow the player to choose his team and play a match in **singleplayer** or **multiplayer** mode.
 
 ## Prerequisites
 Package | Version
