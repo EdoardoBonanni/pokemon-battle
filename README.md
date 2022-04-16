@@ -27,7 +27,7 @@ python connection/Server.py
 After that, two instances of the game must be run two times by launching **main.py**.
 ## GUI
 The application is divided into vary main screens.
-* **ChoosePokemon** that is the first main screen of the application and allows the user to select all Pokémon for the team. 
+* **PokemonChoice** that is the first main screen of the application and allows the user to select all Pokémon for the team. 
 For all Pokémon are shown their stats and their moves, so you can choose Pokémon based on their types and moves to develop a strategy against the other trainers. The add, remove buttons allow to do related operations in the Pokémon team and by clicking on a Pokémon of the team it's possible to switch directly with the one selected in the list. <br/>
 ![init_img.PNG](https://github.com/EdoardoBonanni/pokemon-battle/blob/main/img/init_img.PNG)
 
@@ -40,5 +40,5 @@ For all Pokémon are shown their stats and their moves, so you can choose Pokém
 * **BattleWindowMultiplayer** is the window that allows to play the game vs an other trainer in multiplayer mode. It's displayed the battlefield with the active Pokémon, their types, hp bars and moves. You can choose the Pokémon move for the turn, change active Pokémon or quit the game. <br/>
 ![multiplayer.PNG](https://github.com/EdoardoBonanni/pokemon-battle/blob/main/img/multiplayer.PNG)
 
-* **PokemonMenu** that allows to change the active Pokémon with an other in the team. This window is opened when you click 'Change Pokémon' button on BattleWindowSingleplayer/Multiplayer or when your active Pokémon is fainted. <br/>
+* **TeamChoiceMenu** that allows to change the active Pokémon with an other in the team. This window is opened when you click 'Change Pokémon' button on BattleWindowSingleplayer/Multiplayer or when your active Pokémon is fainted. <br/>
 ![pokemon_team.PNG](https://github.com/EdoardoBonanni/pokemon-battle/blob/main/img/pokemon_team.PNG)
