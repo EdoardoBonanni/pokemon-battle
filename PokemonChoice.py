@@ -223,6 +223,7 @@ class PokemonChoice(QMainWindow):
         Start the battle if the team is full, else warning message.
         :return:
         """
+        # this allow to choose the our team by hand or random, it used only for testing.
         # self.choose_random_pokemon()
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
         # self.model.me.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))

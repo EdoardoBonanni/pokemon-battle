@@ -41,6 +41,7 @@ class GameModeSelection(QMainWindow):
             self.model.me.name = self.ui.insert_name.text()
             self.choose_enemy_pokemon()
 
+            # this allow to choose the enemy team by hand, it used only for testing.
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Venusaur']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Abra']))
             # self.model.enemy.add_pokemon(deepcopy(self.model.pokedex.listPokemon['Lickitung']))
