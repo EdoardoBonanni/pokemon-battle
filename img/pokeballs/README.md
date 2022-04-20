@@ -1,2 +1,0 @@
-# Pokéballs images
-
